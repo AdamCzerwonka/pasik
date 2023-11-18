@@ -1,4 +1,4 @@
-package com.example.pasik.model.mongo;
+package com.example.pasik.model.dto.RealEstate;
 
 import com.example.pasik.model.RealEstate;
 import lombok.Data;
