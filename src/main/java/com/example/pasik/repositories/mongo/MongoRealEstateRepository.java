@@ -6,6 +6,7 @@ import com.example.pasik.repositories.RealEstateRepository;
 import com.mongodb.client.MongoClient;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,7 +21,8 @@ public class MongoRealEstateRepository implements RealEstateRepository {
 
     @Override
     public List<RealEstate> get() {
-        return null;
+        var collection = mongoClient.getDatabase("pas").getCollection("realEstates", MgdRealEstate.class);
+        return collection.find().into(new ArrayList<>()).stream().map(MgdRealEstate::toRealEstate).toList();
     }
 
     @Override
@@ -31,6 +33,7 @@ public class MongoRealEstateRepository implements RealEstateRepository {
     @Override
     public RealEstate create(RealEstate realEstate) {
         var collection = mongoClient.getDatabase("pas").getCollection("realEstates", MgdRealEstate.class);
+        realEstate.setId(UUID.randomUUID());
         collection.insertOne(MgdRealEstate.toMgdRealEstate(realEstate));
 
         return realEstate;

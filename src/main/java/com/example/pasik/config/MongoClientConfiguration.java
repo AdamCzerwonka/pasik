@@ -37,7 +37,7 @@ public class MongoClientConfiguration {
                 .uuidRepresentation(UuidRepresentation.STANDARD)
                 .codecRegistry(CodecRegistries.fromRegistries(
                         MongoClientSettings.getDefaultCodecRegistry(),
-                        CodecRegistries.fromProviders(new UUIDCodecProvider()),
+//                        CodecRegistries.fromProviders(new UUIDCodecProvider()),
                         pojoCodecRegistry)
                 )
                 .build();
