@@ -7,9 +7,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface RentRepository {
-    List<Rent> get();
-    Rent getById(UUID id);
-    Rent create(Rent rent);
+    List<Rent> get() throws Exception;
+    Rent getById(UUID id) throws Exception;
+    Rent create(Rent rent) throws Exception;
     Rent update(Rent rent);
-    void delete(UUID id);
+    void delete(UUID id) throws Exception;
+    void endRent(UUID id) throws Exception;
 }
