@@ -19,9 +19,14 @@ import java.util.List;
 @Configuration
 public class MongoClientConfiguration {
     @Bean
-    public MongoClient getMongoClient() {
-        ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017");
-        MongoCredential credential = MongoCredential.createCredential("root", "admin", "root".toCharArray());
+    public MongoClient getMongoClient(MongoConfig mongoConfig) {
+        ConnectionString connectionString = new ConnectionString(mongoConfig.getConnectionString());
+        MongoCredential credential = MongoCredential
+                .createCredential(
+                        mongoConfig.getUsername(),
+                        "admin",
+                        mongoConfig.getPassword().toCharArray()
+                );
 
         CodecRegistry pojoCodecRegistry =
                 CodecRegistries.fromProviders(PojoCodecProvider.
@@ -45,7 +50,7 @@ public class MongoClientConfiguration {
     }
 
     @Bean
-    public MongoDatabase getMongoDatabase(MongoClient client) {
-        return client.getDatabase("pas");
+    public MongoDatabase getMongoDatabase(MongoClient client, MongoConfig mongoConfig) {
+        return client.getDatabase(mongoConfig.getDbName());
     }
 }
