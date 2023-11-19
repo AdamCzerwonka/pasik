@@ -1,13 +1,14 @@
-package com.example.pasik.model;
+package com.example.pasik.model.dto.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
-
 @Data
 @AllArgsConstructor
-public abstract class User {
+@NoArgsConstructor
+public abstract class UserUpdateRequest {
     private UUID id;
     private String firstName;
     private String lastName;
