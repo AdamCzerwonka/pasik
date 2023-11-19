@@ -1,5 +1,6 @@
-package com.example.pasik.managers;
+package com.example.pasik.managers.impl;
 
+import com.example.pasik.managers.ClientManager;
 import com.example.pasik.model.Client;
 import com.example.pasik.repositories.ClientRepository;
 import org.springframework.stereotype.Component;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class ClientManagerImpl implements ClientManager{
+public class ClientManagerImpl implements ClientManager {
     private final ClientRepository clientRepository;
 
     public ClientManagerImpl(final ClientRepository clientRepository) {

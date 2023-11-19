@@ -13,16 +13,16 @@ import java.util.UUID;
 public class MgdClient extends MgdUser {
     @BsonCreator
     public MgdClient(@BsonId UUID id,
-                     @BsonProperty("firstName") String firstName,
-                     @BsonProperty("lastName") String lastName,
-                     @BsonProperty("login") String login,
-                     @BsonProperty("active") Boolean active) {
+                     @BsonProperty(FIRST_NAME) String firstName,
+                     @BsonProperty(LAST_NAME) String lastName,
+                     @BsonProperty(LOGIN) String login,
+                     @BsonProperty(ACTIVE) Boolean active) {
         super(id, firstName, lastName, login, active);
     }
 
     public static MgdClient toMgdClient(Client client) {
         return new MgdClient(
-                client.getId(),client.getFirstName(),client.getLastName(),client.getLogin(),client.getActive());
+                client.getId(), client.getFirstName(), client.getLastName(), client.getLogin(), client.getActive());
     }
 
     public Client toClient() {
@@ -34,4 +34,10 @@ public class MgdClient extends MgdUser {
                 getActive()
         );
     }
+
+    public final static String ID = "_id";
+    public final static String FIRST_NAME = "firstName";
+    public final static String LAST_NAME = "lastName";
+    public final static String LOGIN = "login";
+    public final static String ACTIVE = "active";
 }

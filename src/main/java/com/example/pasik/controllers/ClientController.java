@@ -1,7 +1,8 @@
 package com.example.pasik.controllers;
 
 import com.example.pasik.managers.ClientManager;
-import com.example.pasik.model.Client;
+import com.example.pasik.managers.RentManager;
+import com.example.pasik.model.Rent;
 import com.example.pasik.model.dto.Client.ClientCreateRequest;
 import com.example.pasik.model.dto.Client.ClientUpdateRequest;
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,11 @@ import java.util.UUID;
 @RequestMapping("/client")
 public class ClientController {
     private final ClientManager clientManager;
+    private final RentManager rentManager;
 
-    public ClientController(final ClientManager clientManager) {
+    public ClientController(final ClientManager clientManager, final RentManager rentManager) {
         this.clientManager = clientManager;
+        this.rentManager = rentManager;
     }
 
     @GetMapping
@@ -43,8 +46,13 @@ public class ClientController {
         }
     }
 
+    @GetMapping("/{id}/rents")
+    public ResponseEntity<List<Rent>> getRents(@PathVariable UUID id, @RequestParam(defaultValue = "true") boolean current) {
+        return ResponseEntity.ok(rentManager.getByClientId(id, current));
+    }
+
     @GetMapping("/login/many/{login}")
-    public  ResponseEntity<?> findClientsByLogin(@PathVariable String login) {
+    public ResponseEntity<?> findClientsByLogin(@PathVariable String login) {
         try {
             var result = clientManager.findClientsByLogin(login);
 
@@ -55,7 +63,7 @@ public class ClientController {
     }
 
     @GetMapping("/login/s/{login}")
-    public  ResponseEntity<?> getByLogin(@PathVariable String login) {
+    public ResponseEntity<?> getByLogin(@PathVariable String login) {
         try {
             var result = clientManager.getByLogin(login);
 
@@ -66,7 +74,7 @@ public class ClientController {
     }
 
     @PostMapping
-    public  ResponseEntity<?> create(@RequestBody ClientCreateRequest request) {
+    public ResponseEntity<?> create(@RequestBody ClientCreateRequest request) {
         try {
             var result = clientManager.create(request.ToClient());
 
@@ -77,7 +85,7 @@ public class ClientController {
     }
 
     @PutMapping
-    public  ResponseEntity<?> update(@RequestBody ClientUpdateRequest request) {
+    public ResponseEntity<?> update(@RequestBody ClientUpdateRequest request) {
         try {
             var result = clientManager.create(request.ToClient());
 
@@ -88,7 +96,7 @@ public class ClientController {
     }
 
     @PostMapping("/activate")
-    public  ResponseEntity<?> activate(@RequestBody UUID id) {
+    public ResponseEntity<?> activate(@RequestBody UUID id) {
         try {
             clientManager.activate(id);
 
@@ -99,7 +107,7 @@ public class ClientController {
     }
 
     @PostMapping("/deactivate")
-    public  ResponseEntity<?> deactivate(@RequestBody UUID id) {
+    public ResponseEntity<?> deactivate(@RequestBody UUID id) {
         try {
             clientManager.deactivate(id);
 

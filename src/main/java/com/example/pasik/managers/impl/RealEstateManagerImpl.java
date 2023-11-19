@@ -1,5 +1,6 @@
-package com.example.pasik.managers;
+package com.example.pasik.managers.impl;
 
+import com.example.pasik.managers.RealEstateManager;
 import com.example.pasik.model.RealEstate;
 import com.example.pasik.repositories.RealEstateRepository;
 import org.springframework.stereotype.Component;
@@ -33,5 +34,16 @@ public class RealEstateManagerImpl implements RealEstateManager {
         }
 
         return realEstate.get();
+    }
+
+    @Override
+    public RealEstate update(RealEstate realEstate) {
+        return realEstateRepository.update(realEstate);
+    }
+
+    @Override
+    public void delete(UUID id) {
+        //TODO: check if realEstate isn't rented before deletion
+        realEstateRepository.delete(id);
     }
 }

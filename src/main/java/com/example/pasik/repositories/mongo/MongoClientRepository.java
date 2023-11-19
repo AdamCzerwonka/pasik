@@ -3,7 +3,7 @@ package com.example.pasik.repositories.mongo;
 import com.example.pasik.model.Client;
 import com.example.pasik.model.dto.Client.MgdClient;
 import com.example.pasik.repositories.ClientRepository;
-import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
@@ -16,15 +16,17 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Repository
-public class MongoClientRepository extends AbstractMongoRepository<MgdClient> implements ClientRepository {
-    public MongoClientRepository(MongoClient client, MongoDatabase database) {
-        super(client, database, database.getCollection("users", MgdClient.class));
+public class MongoClientRepository implements ClientRepository {
+    private final MongoCollection<MgdClient> collection;
+
+    public MongoClientRepository(MongoDatabase database) {
+        this.collection = database.getCollection("users", MgdClient.class);
     }
 
     @Override
     public List<Client> get() throws Exception {
         Bson filter = Filters.eq("_clazz", "client");
-        List<Client> result = getCollection()
+        List<Client> result = collection
                 .find(filter)
                 .into(new ArrayList<>())
                 .stream()
@@ -46,7 +48,7 @@ public class MongoClientRepository extends AbstractMongoRepository<MgdClient> im
                 Filters.regex("login", pattern)
         );
 
-        List<Client> result = getCollection()
+        List<Client> result = collection
                 .find(filters)
                 .into(new ArrayList<>())
                 .stream()
@@ -63,10 +65,10 @@ public class MongoClientRepository extends AbstractMongoRepository<MgdClient> im
     @Override
     public Client getById(UUID id) throws Exception {
         Bson filters = Filters.and(
-            Filters.eq("_clazz", "client"),
-            Filters.eq("_id", id)
+                Filters.eq("_clazz", "client"),
+                Filters.eq("_id", id)
         );
-        MgdClient result = getCollection().find(filters).first();
+        MgdClient result = collection.find(filters).first();
         if (result == null) {
             throw new Exception("Client not found");
         }
@@ -79,7 +81,7 @@ public class MongoClientRepository extends AbstractMongoRepository<MgdClient> im
                 Filters.eq("_clazz", "client"),
                 Filters.eq("login", login)
         );
-        MgdClient result = getCollection().find(filters).first();
+        MgdClient result = collection.find(filters).first();
         if (result == null) {
             throw new Exception("Client not found");
         }
@@ -92,7 +94,8 @@ public class MongoClientRepository extends AbstractMongoRepository<MgdClient> im
         try {
             Client existing = getByLogin(client.getLogin());
             found = true;
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         if (found) {
             //TODO change exception
@@ -100,7 +103,7 @@ public class MongoClientRepository extends AbstractMongoRepository<MgdClient> im
         }
 
         client.setId(UUID.randomUUID());
-        getCollection().insertOne(MgdClient.toMgdClient(client));
+        collection.insertOne(MgdClient.toMgdClient(client));
 
         return client;
     }
@@ -117,7 +120,7 @@ public class MongoClientRepository extends AbstractMongoRepository<MgdClient> im
                 Updates.set("firstName", client.getFirstName()),
                 Updates.set("lastName", client.getFirstName())
         );
-        getCollection().updateOne(filters, updates);
+        collection.updateOne(filters, updates);
         return client;
     }
 
@@ -135,7 +138,7 @@ public class MongoClientRepository extends AbstractMongoRepository<MgdClient> im
                 Filters.eq("_id", id)
         );
         Bson update = Updates.set("active", true);
-        getCollection().updateOne(filters, update);
+        collection.updateOne(filters, update);
     }
 
     @Override
@@ -151,7 +154,7 @@ public class MongoClientRepository extends AbstractMongoRepository<MgdClient> im
                 Filters.eq("_id", id)
         );
         Bson update = Updates.set("active", false);
-        getCollection().updateOne(filters, update);
+        collection.updateOne(filters, update);
 
     }
 }

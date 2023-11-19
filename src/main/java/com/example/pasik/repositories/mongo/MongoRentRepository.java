@@ -1,92 +1,112 @@
 package com.example.pasik.repositories.mongo;
 
 import com.example.pasik.model.Rent;
+import com.example.pasik.model.dto.Client.MgdClient;
+import com.example.pasik.model.dto.RealEstate.MgdRealEstate;
 import com.example.pasik.model.dto.Rent.MgdRent;
 import com.example.pasik.repositories.RentRepository;
-import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import org.bson.conversions.Bson;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
-public class MongoRentRepository extends AbstractMongoRepository<MgdRent> implements RentRepository {
+public class MongoRentRepository implements RentRepository {
+    private final MongoCollection<MgdRent> collection;
 
-    public MongoRentRepository(MongoClient client, MongoDatabase database) {
-        super(client, database, database.getCollection("rents", MgdRent.class));
+    public MongoRentRepository(final MongoDatabase database) {
+        this.collection = database.getCollection("rents", MgdRent.class);
     }
 
     @Override
-    public List<Rent> get() throws Exception {
-        List<Rent> result = getCollection()
+    public List<Rent> get() {
+        return collection
                 .find()
                 .into(new ArrayList<>())
                 .stream()
                 .map(MgdRent::toRent)
                 .toList();
-
-        if (result.isEmpty()) {
-            //TODO change exception
-            throw new Exception("No rents found");
-        }
-
-        return result;
     }
 
     @Override
-    public Rent getById(UUID id) throws Exception {
-        Bson filter = Filters.eq("_id", id);
-        MgdRent result = getCollection().find(filter).first();
+    public List<Rent> getByClientId(UUID clientId, boolean current) {
+        Bson filters = Filters.and(
+                Filters.eq(MgdRent.CLIENT + "." + MgdClient.ID, clientId),
+                Filters.exists(MgdRent.END_DATE, !current)
+        );
+
+        return collection
+                .find(filters)
+                .into(new ArrayList<>())
+                .stream()
+                .map(MgdRent::toRent)
+                .toList();
+    }
+
+    @Override
+    public List<Rent> getByRealEstateId(UUID realEstateId, boolean current) {
+        Bson filters = Filters.and(
+                Filters.eq(MgdRent.REAL_ESTATE + "." + MgdRealEstate.ID, realEstateId),
+                Filters.exists(MgdRent.END_DATE, !current)
+        );
+
+        return collection
+                .find(filters)
+                .into(new ArrayList<>())
+                .stream()
+                .map(MgdRent::toRent)
+                .toList();
+    }
+
+    @Override
+    public Optional<Rent> getById(UUID id) {
+        Bson filter = Filters.eq(MgdRent.ID, id);
+        MgdRent result = collection.find(filter).first();
         if (result == null) {
-            //TODO change exception
-            throw new Exception("Rent not found");
+            return Optional.empty();
         }
-        return result.toRent();
+
+        return Optional.of(result.toRent());
     }
 
     @Override
-    public Rent create(Rent rent) throws Exception {
+    public Rent create(Rent rent) {
         // TODO add rent restrictions
         rent.setId(UUID.randomUUID());
-        getCollection().insertOne(MgdRent.toMgdRent(rent));
+        collection.insertOne(MgdRent.toMgdRent(rent));
 
         return rent;
     }
 
     @Override
     public Rent update(Rent rent) {
-        // TODO implementation
-        return null;
+        Bson updates = Updates.combine(
+                Updates.set(MgdRent.CLIENT, MgdClient.toMgdClient(rent.getClient())),
+                Updates.set(MgdRent.REAL_ESTATE, MgdRealEstate.toMgdRealEstate(rent.getRealEstate())),
+                Updates.set(MgdRent.END_DATE, rent.getEndDate())
+        );
+        Bson filter = Filters.eq(MgdRent.ID, rent.getId());
+        collection.updateOne(filter, updates);
+        return getById(rent.getId()).orElseThrow();
     }
 
     @Override
     public void delete(UUID id) throws Exception {
-        Rent rent = getById(id);
+        Rent rent = getById(id).orElseThrow();
 
         if (rent.getEndDate() != null) {
             //TODO change exception
             throw new Exception("Cannot delete this rent");
         }
 
-        Bson filter = Filters.eq("_id", id);
-        getCollection().deleteOne(filter);
-    }
-
-    @Override
-    public void endRent(UUID id) throws Exception {
-        Rent rent = getById(id);
-        if (rent.getEndDate() != null) {
-            //TODO change exception
-            throw new Exception("Rent is already ended");
-        }
-        Bson filter = Filters.eq("_id", id);
-        Bson update = Updates.set("endDate", LocalDate.now());
-        getCollection().updateOne(filter, update);
+        Bson filter = Filters.eq(MgdRent.ID, id);
+        collection.deleteOne(filter);
     }
 }
