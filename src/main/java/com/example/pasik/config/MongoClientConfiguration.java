@@ -1,6 +1,5 @@
 package com.example.pasik.config;
 
-import com.example.pasik.utils.UUIDCodecProvider;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
@@ -38,7 +37,6 @@ public class MongoClientConfiguration {
                 .uuidRepresentation(UuidRepresentation.STANDARD)
                 .codecRegistry(CodecRegistries.fromRegistries(
                         MongoClientSettings.getDefaultCodecRegistry(),
-//                        CodecRegistries.fromProviders(new UUIDCodecProvider()),
                         pojoCodecRegistry)
                 )
                 .build();
