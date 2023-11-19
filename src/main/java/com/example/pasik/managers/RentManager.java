@@ -1,5 +1,6 @@
 package com.example.pasik.managers;
 
+import com.example.pasik.model.RealEstate;
 import com.example.pasik.model.Rent;
 
 import java.time.LocalDate;
@@ -12,6 +13,11 @@ public interface RentManager {
     void endRent(UUID id) throws Exception;
 
     List<Rent> getByClientId(UUID clientId, boolean current);
+
+    List<Rent> get();
+    Rent getById(UUID id) throws Exception;
+    void delete(UUID id) throws Exception;
+
 
     List<Rent> getByRealEstateID(UUID realEstateId, boolean current);
 }
