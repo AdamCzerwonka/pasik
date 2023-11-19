@@ -1,6 +1,8 @@
 package com.example.pasik.repositories.mongo;
 
 import com.example.pasik.model.Rent;
+import com.example.pasik.model.dto.Client.MgdClient;
+import com.example.pasik.model.dto.RealEstate.MgdRealEstate;
 import com.example.pasik.model.dto.Rent.MgdRent;
 import com.example.pasik.repositories.RentRepository;
 import com.mongodb.client.MongoCollection;
@@ -34,6 +36,21 @@ public class MongoRentRepository implements RentRepository {
     }
 
     @Override
+    public List<Rent> getByClientId(UUID clientId, boolean current) {
+        Bson filters = Filters.and(
+                Filters.eq(MgdRent.CLIENT + "." + MgdClient.ID, clientId),
+                Filters.exists(MgdRent.END_DATE, !current)
+        );
+
+        return collection
+                .find(filters)
+                .into(new ArrayList<>())
+                .stream()
+                .map(MgdRent::toRent)
+                .toList();
+    }
+
+    @Override
     public Optional<Rent> getById(UUID id) {
         Bson filter = Filters.eq(MgdRent.ID, id);
         MgdRent result = collection.find(filter).first();
@@ -56,8 +73,8 @@ public class MongoRentRepository implements RentRepository {
     @Override
     public Rent update(Rent rent) {
         Bson updates = Updates.combine(
-                Updates.set(MgdRent.CLIENT, rent.getClient()),
-                Updates.set(MgdRent.REAL_ESTATE, rent.getRealEstate()),
+                Updates.set(MgdRent.CLIENT, MgdClient.toMgdClient(rent.getClient())),
+                Updates.set(MgdRent.REAL_ESTATE, MgdRealEstate.toMgdRealEstate(rent.getRealEstate())),
                 Updates.set(MgdRent.END_DATE, rent.getEndDate())
         );
         Bson filter = Filters.eq(MgdRent.ID, rent.getId());

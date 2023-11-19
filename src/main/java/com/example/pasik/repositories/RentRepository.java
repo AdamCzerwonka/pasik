@@ -9,6 +9,8 @@ import java.util.UUID;
 public interface RentRepository {
     List<Rent> get();
 
+    List<Rent> getByClientId(UUID clientId, boolean current);
+
     Optional<Rent> getById(UUID id);
 
     Rent create(Rent rent);

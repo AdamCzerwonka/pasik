@@ -10,6 +10,7 @@ import com.example.pasik.repositories.RentRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -53,12 +54,18 @@ public class RentManagerImpl implements RentManager {
 
     @Override
     public void endRent(UUID id) throws Exception {
-        Rent rent = rentRepository.getById(id);
-        if (rent == null) {
+        Optional<Rent> rentResult = rentRepository.getById(id);
+        if (rentResult.isEmpty()) {
             throw new Exception("tes");
         }
+        Rent rent = rentResult.get();
 
         rent.setEndDate(LocalDate.now());
         rentRepository.update(rent);
+    }
+
+    @Override
+    public List<Rent> getByClientId(UUID clientId, boolean current) {
+        return rentRepository.getByClientId(clientId, current);
     }
 }
