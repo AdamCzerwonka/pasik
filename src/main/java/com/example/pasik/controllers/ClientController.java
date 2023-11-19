@@ -87,7 +87,7 @@ public class ClientController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/activate")
     public  ResponseEntity<?> activate(@RequestBody UUID id) {
         try {
             clientManager.activate(id);
@@ -98,7 +98,7 @@ public class ClientController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/deactivate")
     public  ResponseEntity<?> deactivate(@RequestBody UUID id) {
         try {
             clientManager.deactivate(id);

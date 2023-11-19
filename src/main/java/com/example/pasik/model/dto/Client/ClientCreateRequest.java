@@ -5,7 +5,6 @@ import com.example.pasik.model.dto.User.UserCreateRequest;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @NoArgsConstructor
 public class ClientCreateRequest extends UserCreateRequest {
     public Client ToClient() {
