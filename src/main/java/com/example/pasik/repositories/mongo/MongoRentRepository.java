@@ -3,7 +3,6 @@ package com.example.pasik.repositories.mongo;
 import com.example.pasik.model.Rent;
 import com.example.pasik.model.dto.Rent.MgdRent;
 import com.example.pasik.repositories.RentRepository;
-import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -11,9 +10,9 @@ import com.mongodb.client.model.Updates;
 import org.bson.conversions.Bson;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -25,35 +24,28 @@ public class MongoRentRepository implements RentRepository {
     }
 
     @Override
-    public List<Rent> get() throws Exception {
-        List<Rent> result = collection
+    public List<Rent> get() {
+        return collection
                 .find()
                 .into(new ArrayList<>())
                 .stream()
                 .map(MgdRent::toRent)
                 .toList();
-
-        if (result.isEmpty()) {
-            //TODO change exception
-            throw new Exception("No rents found");
-        }
-
-        return result;
     }
 
     @Override
-    public Rent getById(UUID id) throws Exception {
-        Bson filter = Filters.eq("_id", id);
+    public Optional<Rent> getById(UUID id) {
+        Bson filter = Filters.eq(MgdRent.ID, id);
         MgdRent result = collection.find(filter).first();
         if (result == null) {
-            //TODO change exception
-            throw new Exception("Rent not found");
+            return Optional.empty();
         }
-        return result.toRent();
+
+        return Optional.of(result.toRent());
     }
 
     @Override
-    public Rent create(Rent rent) throws Exception {
+    public Rent create(Rent rent) {
         // TODO add rent restrictions
         rent.setId(UUID.randomUUID());
         collection.insertOne(MgdRent.toMgdRent(rent));
@@ -63,32 +55,26 @@ public class MongoRentRepository implements RentRepository {
 
     @Override
     public Rent update(Rent rent) {
-        // TODO implementation
-        return null;
+        Bson updates = Updates.combine(
+                Updates.set(MgdRent.CLIENT, rent.getClient()),
+                Updates.set(MgdRent.REAL_ESTATE, rent.getRealEstate()),
+                Updates.set(MgdRent.END_DATE, rent.getEndDate())
+        );
+        Bson filter = Filters.eq(MgdRent.ID, rent.getId());
+        collection.updateOne(filter, updates);
+        return getById(rent.getId()).orElseThrow();
     }
 
     @Override
     public void delete(UUID id) throws Exception {
-        Rent rent = getById(id);
+        Rent rent = getById(id).orElseThrow();
 
         if (rent.getEndDate() != null) {
             //TODO change exception
             throw new Exception("Cannot delete this rent");
         }
 
-        Bson filter = Filters.eq("_id", id);
+        Bson filter = Filters.eq(MgdRent.ID, id);
         collection.deleteOne(filter);
-    }
-
-    @Override
-    public void endRent(UUID id) throws Exception {
-        Rent rent = getById(id);
-        if (rent.getEndDate() != null) {
-            //TODO change exception
-            throw new Exception("Rent is already ended");
-        }
-        Bson filter = Filters.eq("_id", id);
-        Bson update = Updates.set("endDate", LocalDate.now());
-        collection.updateOne(filter, update);
     }
 }

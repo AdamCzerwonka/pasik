@@ -1,8 +1,6 @@
 package com.example.pasik.model.dto.Rent;
 
-import com.example.pasik.model.Client;
 import com.example.pasik.model.Rent;
-import com.example.pasik.model.RealEstate;
 import com.example.pasik.model.dto.Client.MgdClient;
 import com.example.pasik.model.dto.RealEstate.MgdRealEstate;
 import lombok.Data;
@@ -17,25 +15,26 @@ import java.util.UUID;
 public class MgdRent {
     @BsonCreator
     public MgdRent(@BsonId UUID id,
-                   @BsonProperty MgdClient client,
-                   @BsonProperty MgdRealEstate realEstate,
-                   @BsonProperty LocalDate startDate,
-                   @BsonProperty LocalDate endDate) {
+                   @BsonProperty(CLIENT) MgdClient client,
+                   @BsonProperty(REAL_ESTATE) MgdRealEstate realEstate,
+                   @BsonProperty(START_DATE) LocalDate startDate,
+                   @BsonProperty(END_DATE) LocalDate endDate) {
         this.id = id;
         this.client = client;
         this.realEstate = realEstate;
-        this.startDate= startDate;
+        this.startDate = startDate;
         this.endDate = endDate;
     }
+
     @BsonId
     private UUID id;
-    @BsonProperty("client")
+    @BsonProperty(CLIENT)
     MgdClient client;
-    @BsonProperty("realEstate")
+    @BsonProperty(REAL_ESTATE)
     MgdRealEstate realEstate;
-    @BsonProperty("startDate")
+    @BsonProperty(START_DATE)
     LocalDate startDate;
-    @BsonProperty("endDate")
+    @BsonProperty(END_DATE)
     LocalDate endDate;
 
     public Rent toRent() {
@@ -55,4 +54,10 @@ public class MgdRent {
                 rent.getStartDate(),
                 rent.getEndDate());
     }
+
+    public final static String ID = "_id";
+    public final static String CLIENT = "client";
+    public final static String REAL_ESTATE = "realEstate";
+    public final static String START_DATE = "startDate";
+    public final static String END_DATE = "endDate";
 }

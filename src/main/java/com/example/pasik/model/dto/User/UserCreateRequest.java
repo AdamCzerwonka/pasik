@@ -12,5 +12,4 @@ public abstract class UserCreateRequest {
     private String lastName;
     private String login;
     private Boolean active;
-
 }

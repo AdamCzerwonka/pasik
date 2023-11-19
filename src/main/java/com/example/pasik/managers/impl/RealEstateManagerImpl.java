@@ -38,11 +38,12 @@ public class RealEstateManagerImpl implements RealEstateManager {
 
     @Override
     public RealEstate update(RealEstate realEstate) {
-        return null;
+        return realEstateRepository.update(realEstate);
     }
 
     @Override
     public void delete(UUID id) {
-
+        //TODO: check if realEstate isn't rented before deletion
+        realEstateRepository.delete(id);
     }
 }
