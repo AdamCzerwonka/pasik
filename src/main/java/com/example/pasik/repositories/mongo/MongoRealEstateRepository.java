@@ -6,6 +6,7 @@ import com.example.pasik.repositories.RealEstateRepository;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import org.bson.conversions.Bson;
 import org.springframework.stereotype.Component;
 
@@ -51,11 +52,24 @@ public class MongoRealEstateRepository implements RealEstateRepository {
 
     @Override
     public RealEstate update(RealEstate realEstate) {
-        return null;
+        MongoCollection<MgdRealEstate> collection = mongoClient.getDatabase("pas").getCollection("realEstates", MgdRealEstate.class);
+        Bson updates = Updates.combine(
+                Updates.set(MgdRealEstate.NAME, realEstate.getName()),
+                Updates.set(MgdRealEstate.ADDRESS, realEstate.getAddress()),
+                Updates.set(MgdRealEstate.AREA, realEstate.getArea()),
+                Updates.set(MgdRealEstate.PRICE, realEstate.getPrice())
+        );
+
+        Bson filter = Filters.eq("_id", realEstate.getId());
+
+        collection.updateOne(filter, updates);
+        return getById(realEstate.getId()).get();
     }
 
     @Override
     public void delete(UUID id) {
-
+        MongoCollection<MgdRealEstate> collection = mongoClient.getDatabase("pas").getCollection("realEstates", MgdRealEstate.class);
+        Bson filter = Filters.eq("_id", id);
+        collection.deleteOne(filter);
     }
 }

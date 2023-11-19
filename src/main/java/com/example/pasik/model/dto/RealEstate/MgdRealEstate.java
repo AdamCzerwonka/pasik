@@ -13,10 +13,10 @@ public class MgdRealEstate {
     @BsonCreator
     public MgdRealEstate(
             @BsonId UUID id,
-            @BsonProperty("name") String name,
-            @BsonProperty("address") String address,
-            @BsonProperty("area") double area,
-            @BsonProperty("price") double price) {
+            @BsonProperty(NAME) String name,
+            @BsonProperty(ADDRESS) String address,
+            @BsonProperty(AREA) double area,
+            @BsonProperty(PRICE) double price) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -45,12 +45,17 @@ public class MgdRealEstate {
 
     @BsonId
     private UUID id;
-    @BsonProperty("name")
+    @BsonProperty(NAME)
     private String name;
-    @BsonProperty("address")
+    @BsonProperty(ADDRESS)
     private String address;
-    @BsonProperty("area")
+    @BsonProperty(AREA)
     private double area;
-    @BsonProperty("price")
+    @BsonProperty(PRICE)
     private double price;
+
+    public final static String NAME = "name";
+    public final static String ADDRESS = "address";
+    public final static String AREA = "area";
+    public final static String PRICE = "price";
 }

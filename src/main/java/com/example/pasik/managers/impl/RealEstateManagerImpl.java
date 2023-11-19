@@ -1,5 +1,6 @@
-package com.example.pasik.managers;
+package com.example.pasik.managers.impl;
 
+import com.example.pasik.managers.RealEstateManager;
 import com.example.pasik.model.RealEstate;
 import com.example.pasik.repositories.RealEstateRepository;
 import org.springframework.stereotype.Component;
