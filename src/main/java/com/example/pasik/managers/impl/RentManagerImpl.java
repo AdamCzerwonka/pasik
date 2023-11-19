@@ -68,4 +68,24 @@ public class RentManagerImpl implements RentManager {
     public List<Rent> getByClientId(UUID clientId, boolean current) {
         return rentRepository.getByClientId(clientId, current);
     }
+
+    @Override
+    public List<Rent> get() {
+        return rentRepository.get();
+    }
+
+    @Override
+    public Rent getById(UUID id) throws Exception {
+        Optional<Rent> rent = rentRepository.getById(id);
+        if (rent.isEmpty()) {
+            throw new Exception("Rent not found");
+        }
+
+        return rent.get();
+    }
+
+    @Override
+    public void delete(UUID id) throws Exception {
+        rentRepository.delete(id);
+    }
 }
