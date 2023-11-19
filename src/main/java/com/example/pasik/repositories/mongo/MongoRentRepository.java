@@ -4,6 +4,7 @@ import com.example.pasik.model.Rent;
 import com.example.pasik.model.dto.Rent.MgdRent;
 import com.example.pasik.repositories.RentRepository;
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
@@ -16,15 +17,16 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-public class MongoRentRepository extends AbstractMongoRepository<MgdRent> implements RentRepository {
+public class MongoRentRepository implements RentRepository {
+    private final MongoCollection<MgdRent> collection;
 
-    public MongoRentRepository(MongoClient client, MongoDatabase database) {
-        super(client, database, database.getCollection("rents", MgdRent.class));
+    public MongoRentRepository(final MongoDatabase database) {
+        this.collection = database.getCollection("rents", MgdRent.class);
     }
 
     @Override
     public List<Rent> get() throws Exception {
-        List<Rent> result = getCollection()
+        List<Rent> result = collection
                 .find()
                 .into(new ArrayList<>())
                 .stream()
@@ -42,7 +44,7 @@ public class MongoRentRepository extends AbstractMongoRepository<MgdRent> implem
     @Override
     public Rent getById(UUID id) throws Exception {
         Bson filter = Filters.eq("_id", id);
-        MgdRent result = getCollection().find(filter).first();
+        MgdRent result = collection.find(filter).first();
         if (result == null) {
             //TODO change exception
             throw new Exception("Rent not found");
@@ -54,7 +56,7 @@ public class MongoRentRepository extends AbstractMongoRepository<MgdRent> implem
     public Rent create(Rent rent) throws Exception {
         // TODO add rent restrictions
         rent.setId(UUID.randomUUID());
-        getCollection().insertOne(MgdRent.toMgdRent(rent));
+        collection.insertOne(MgdRent.toMgdRent(rent));
 
         return rent;
     }
@@ -75,7 +77,7 @@ public class MongoRentRepository extends AbstractMongoRepository<MgdRent> implem
         }
 
         Bson filter = Filters.eq("_id", id);
-        getCollection().deleteOne(filter);
+        collection.deleteOne(filter);
     }
 
     @Override
@@ -87,6 +89,6 @@ public class MongoRentRepository extends AbstractMongoRepository<MgdRent> implem
         }
         Bson filter = Filters.eq("_id", id);
         Bson update = Updates.set("endDate", LocalDate.now());
-        getCollection().updateOne(filter, update);
+        collection.updateOne(filter, update);
     }
 }
