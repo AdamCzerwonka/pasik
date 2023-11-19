@@ -48,6 +48,23 @@ public class RealEstateController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable UUID id) {
+        realEstateManager.delete(id);
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(
+            @PathVariable UUID id,
+            @RequestBody @Valid RealEstateRequest request) {
+        RealEstate realEstate = request.toRealEstate();
+        realEstate.setId(id);
+        RealEstate result = realEstateManager.update(realEstate);
+        return ResponseEntity.ok(result);
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationExceptions(

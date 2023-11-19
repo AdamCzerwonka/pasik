@@ -9,4 +9,6 @@ public interface RealEstateManager {
     RealEstate create(RealEstate realEstate);
     List<RealEstate> get();
     RealEstate getById(UUID id) throws Exception;
+    RealEstate update(RealEstate realEstate);
+    void delete(UUID id);
 }

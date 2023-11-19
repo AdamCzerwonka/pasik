@@ -11,6 +11,8 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,6 +22,7 @@ import java.util.List;
 public class MongoClientConfiguration {
     @Bean
     public MongoClient getMongoClient(MongoConfig mongoConfig) {
+        Logger logger = LoggerFactory.getLogger(MongoClientConfiguration.class);
         ConnectionString connectionString = new ConnectionString(mongoConfig.getConnectionString());
         MongoCredential credential = MongoCredential
                 .createCredential(
@@ -46,7 +49,14 @@ public class MongoClientConfiguration {
                 )
                 .build();
 
-        return MongoClients.create(settings);
+        var client = MongoClients.create(settings);
+
+        if (mongoConfig.isDbClean()) {
+            client.getDatabase(mongoConfig.getDbName()).drop();
+            logger.info("dropping db");
+        }
+
+        return client;
     }
 
     @Bean

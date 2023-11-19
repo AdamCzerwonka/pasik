@@ -16,4 +16,5 @@ public class MongoConfig {
     private String username;
     private String password;
     private String dbName;
+    private boolean dbClean = false;
 }

@@ -35,4 +35,14 @@ public class RealEstateManagerImpl implements RealEstateManager {
 
         return realEstate.get();
     }
+
+    @Override
+    public RealEstate update(RealEstate realEstate) {
+        return null;
+    }
+
+    @Override
+    public void delete(UUID id) {
+
+    }
 }

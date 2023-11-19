@@ -3,13 +3,11 @@ package com.example.pasik.repositories.mongo;
 import com.example.pasik.model.Client;
 import com.example.pasik.model.dto.Client.MgdClient;
 import com.example.pasik.repositories.ClientRepository;
-import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import org.bson.conversions.Bson;
-import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

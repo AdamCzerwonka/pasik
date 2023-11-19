@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.is;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -42,6 +43,18 @@ public class RealEstateControllerTests {
                 .then()
                 .assertThat()
                 .statusCode(201);
+    }
+
+    @Test
+    public void getAll() {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/realestate")
+                .then()
+                .assertThat()
+                .body("size()", is(0))
+                .statusCode(200);
     }
 
 }
