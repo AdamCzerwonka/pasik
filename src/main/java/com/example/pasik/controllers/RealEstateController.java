@@ -1,7 +1,9 @@
 package com.example.pasik.controllers;
 
 import com.example.pasik.managers.RealEstateManager;
+import com.example.pasik.managers.RentManager;
 import com.example.pasik.model.RealEstate;
+import com.example.pasik.model.Rent;
 import com.example.pasik.model.dto.RealEstate.RealEstateRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,9 +23,11 @@ import java.util.UUID;
 @RequestMapping("/realestate")
 public class RealEstateController {
     private final RealEstateManager realEstateManager;
+    private final RentManager rentManager;
 
-    public RealEstateController(final RealEstateManager realEstateManager) {
+    public RealEstateController(final RealEstateManager realEstateManager, final RentManager rentManager) {
         this.realEstateManager = realEstateManager;
+        this.rentManager = rentManager;
     }
 
     @PostMapping
@@ -46,6 +50,11 @@ public class RealEstateController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
+
+    @GetMapping("{id}/rents")
+    public ResponseEntity<List<Rent>> getRents(@PathVariable UUID id, @RequestParam(defaultValue = "true") boolean current) {
+        return ResponseEntity.ok(rentManager.getByRealEstateID(id, current));
     }
 
     @DeleteMapping("/{id}")

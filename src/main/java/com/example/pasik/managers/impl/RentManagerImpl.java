@@ -68,4 +68,9 @@ public class RentManagerImpl implements RentManager {
     public List<Rent> getByClientId(UUID clientId, boolean current) {
         return rentRepository.getByClientId(clientId, current);
     }
+
+    @Override
+    public List<Rent> getByRealEstateID(UUID realEstateId, boolean current) {
+        return rentRepository.getByRealEstateId(realEstateId, current);
+    }
 }

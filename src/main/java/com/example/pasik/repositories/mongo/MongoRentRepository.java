@@ -51,6 +51,21 @@ public class MongoRentRepository implements RentRepository {
     }
 
     @Override
+    public List<Rent> getByRealEstateId(UUID realEstateId, boolean current) {
+        Bson filters = Filters.and(
+                Filters.eq(MgdRent.REAL_ESTATE + "." + MgdRealEstate.ID, realEstateId),
+                Filters.exists(MgdRent.END_DATE, !current)
+        );
+
+        return collection
+                .find(filters)
+                .into(new ArrayList<>())
+                .stream()
+                .map(MgdRent::toRent)
+                .toList();
+    }
+
+    @Override
     public Optional<Rent> getById(UUID id) {
         Bson filter = Filters.eq(MgdRent.ID, id);
         MgdRent result = collection.find(filter).first();

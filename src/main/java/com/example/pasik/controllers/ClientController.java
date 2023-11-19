@@ -47,7 +47,7 @@ public class ClientController {
     }
 
     @GetMapping("/{id}/rents")
-    public ResponseEntity<List<Rent>> getRents(@PathVariable UUID id, @RequestParam boolean current) {
+    public ResponseEntity<List<Rent>> getRents(@PathVariable UUID id, @RequestParam(defaultValue = "true") boolean current) {
         return ResponseEntity.ok(rentManager.getByClientId(id, current));
     }
 

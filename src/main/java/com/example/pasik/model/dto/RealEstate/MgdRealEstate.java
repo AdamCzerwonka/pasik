@@ -54,6 +54,7 @@ public class MgdRealEstate {
     @BsonProperty(PRICE)
     private double price;
 
+    public final static String ID = "_id";
     public final static String NAME = "name";
     public final static String ADDRESS = "address";
     public final static String AREA = "area";

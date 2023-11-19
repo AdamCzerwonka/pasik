@@ -12,4 +12,6 @@ public interface RentManager {
     void endRent(UUID id) throws Exception;
 
     List<Rent> getByClientId(UUID clientId, boolean current);
+
+    List<Rent> getByRealEstateID(UUID realEstateId, boolean current);
 }
