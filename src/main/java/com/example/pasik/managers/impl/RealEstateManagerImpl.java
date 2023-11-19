@@ -2,7 +2,9 @@ package com.example.pasik.managers.impl;
 
 import com.example.pasik.managers.RealEstateManager;
 import com.example.pasik.model.RealEstate;
+import com.example.pasik.model.Rent;
 import com.example.pasik.repositories.RealEstateRepository;
+import com.example.pasik.repositories.RentRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,9 +14,11 @@ import java.util.UUID;
 @Component
 public class RealEstateManagerImpl implements RealEstateManager {
     private final RealEstateRepository realEstateRepository;
+    private final RentRepository rentRepository;
 
-    public RealEstateManagerImpl(final RealEstateRepository realEstateRepository) {
+    public RealEstateManagerImpl(final RealEstateRepository realEstateRepository, final RentRepository rentRepository) {
         this.realEstateRepository = realEstateRepository;
+        this.rentRepository = rentRepository;
     }
 
     public RealEstate create(RealEstate realEstate) {
@@ -43,7 +47,11 @@ public class RealEstateManagerImpl implements RealEstateManager {
 
     @Override
     public void delete(UUID id) {
-        //TODO: check if realEstate isn't rented before deletion
+        List<Rent> rents = rentRepository.getByRealEstateId(id, true);
+        if (!rents.isEmpty()) {
+            throw new RuntimeException("Real estate is rented");
+        }
+
         realEstateRepository.delete(id);
     }
 }

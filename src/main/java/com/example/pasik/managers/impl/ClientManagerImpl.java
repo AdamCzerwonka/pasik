@@ -3,7 +3,6 @@ package com.example.pasik.managers.impl;
 import com.example.pasik.managers.ClientManager;
 import com.example.pasik.model.Client;
 import com.example.pasik.repositories.ClientRepository;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,7 +28,12 @@ public class ClientManagerImpl implements ClientManager {
 
     @Override
     public Client getById(UUID id) throws Exception {
-        return clientRepository.getById(id);
+        var client = clientRepository.getById(id);
+        if (client.isEmpty()) {
+            throw new Exception("Client not found");
+        }
+
+        return client.get();
     }
 
     @Override
@@ -48,12 +52,15 @@ public class ClientManagerImpl implements ClientManager {
     }
 
     @Override
-    public void activate(UUID id) throws Exception {
-        clientRepository.activate(id);
-    }
+    public void setActiveStatus(UUID id, boolean active) throws Exception {
+        var clientResult = clientRepository.getById(id);
+        if (clientResult.isEmpty()) {
+            throw new RuntimeException("Not found");
+        }
 
-    @Override
-    public void deactivate(UUID id) throws Exception {
-        clientRepository.deactivate(id);
+        var client = clientResult.get();
+        client.setActive(active);
+
+        clientRepository.update(client);
     }
 }

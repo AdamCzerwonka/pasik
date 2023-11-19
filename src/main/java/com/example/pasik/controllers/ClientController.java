@@ -98,7 +98,7 @@ public class ClientController {
     @PostMapping("/activate")
     public ResponseEntity<?> activate(@RequestBody UUID id) {
         try {
-            clientManager.activate(id);
+            clientManager.setActiveStatus(id, true);
 
             return ResponseEntity.ok("Activated");
         } catch (Exception e) {
@@ -109,7 +109,7 @@ public class ClientController {
     @PostMapping("/deactivate")
     public ResponseEntity<?> deactivate(@RequestBody UUID id) {
         try {
-            clientManager.deactivate(id);
+            clientManager.setActiveStatus(id, false);
 
             return ResponseEntity.ok("Deactivated");
         } catch (Exception e) {

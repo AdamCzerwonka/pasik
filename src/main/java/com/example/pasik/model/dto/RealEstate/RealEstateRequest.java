@@ -4,12 +4,14 @@ import com.example.pasik.model.RealEstate;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class RealEstateRequest {
     @NotBlank(message = "Name cannot be empty")
     private String name;

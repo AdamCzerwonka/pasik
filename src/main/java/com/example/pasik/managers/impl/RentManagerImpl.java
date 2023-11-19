@@ -31,19 +31,31 @@ public class RentManagerImpl implements RentManager {
 
     @Override
     public Rent create(UUID clientId, UUID realEstateId, LocalDate startDate) throws Exception {
-        Client client = clientRepository.getById(clientId);
+        Optional<Client> client = clientRepository.getById(clientId);
         Optional<RealEstate> realEstate = realEstateRepository.getById(realEstateId);
 
         if (realEstate.isEmpty()) {
+            //FIXME: change exception to sth more more accurate
             throw new RuntimeException("chuj");
         }
 
-        //TODO: check if realEstate hasn't been rented already
+        if (client.isEmpty()) {
+            //FIXME: change exception to sth more more accurate
+            throw new RuntimeException("chuj");
+        }
+
+
+        var rents = rentRepository.getByRealEstateId(realEstateId, true);
+        if (!rents.isEmpty()) {
+            //FIXME: change exception to sth more more accurate
+            throw new RuntimeException("chuj");
+        }
+
 
         var rent = Rent
                 .builder()
                 .id(UUID.randomUUID())
-                .client(client)
+                .client(client.get())
                 .realEstate(realEstate.get())
                 .startDate(startDate)
                 .build();
@@ -56,6 +68,7 @@ public class RentManagerImpl implements RentManager {
     public void endRent(UUID id) throws Exception {
         Optional<Rent> rentResult = rentRepository.getById(id);
         if (rentResult.isEmpty()) {
+            //FIXME: change exception to sth more more accurate
             throw new Exception("tes");
         }
         Rent rent = rentResult.get();
@@ -78,6 +91,7 @@ public class RentManagerImpl implements RentManager {
     public Rent getById(UUID id) throws Exception {
         Optional<Rent> rent = rentRepository.getById(id);
         if (rent.isEmpty()) {
+            //FIXME: change exception to sth more more accurate
             throw new Exception("Rent not found");
         }
 

@@ -56,7 +56,7 @@ public class RentController {
         }
     }
 
-    @GetMapping("{/id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable UUID id) throws Exception {
         rentManager.delete(id);
 

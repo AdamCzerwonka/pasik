@@ -13,6 +13,5 @@ public interface ClientManager {
     Client getByLogin(String login) throws Exception;
     Client create(Client client) throws Exception;
     Client update(Client client) throws Exception;
-    void activate(UUID id) throws Exception;
-    void deactivate(UUID id) throws Exception;
+    void setActiveStatus(UUID id, boolean active) throws Exception;
 }

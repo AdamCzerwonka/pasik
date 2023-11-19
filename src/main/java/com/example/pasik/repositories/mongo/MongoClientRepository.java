@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -63,16 +64,16 @@ public class MongoClientRepository implements ClientRepository {
     }
 
     @Override
-    public Client getById(UUID id) throws Exception {
+    public Optional<Client> getById(UUID id) {
         Bson filters = Filters.and(
                 Filters.eq("_clazz", "client"),
                 Filters.eq("_id", id)
         );
         MgdClient result = collection.find(filters).first();
         if (result == null) {
-            throw new Exception("Client not found");
+            return Optional.empty();
         }
-        return result.toClient();
+        return Optional.of(result.toClient());
     }
 
     @Override
@@ -110,51 +111,16 @@ public class MongoClientRepository implements ClientRepository {
 
     @Override
     public Client update(Client client) throws Exception {
-        Client existing = getById(client.getId());
-
         Bson filters = Filters.and(
                 Filters.eq("_clazz", "client"),
-                Filters.eq("_id", client.getId())
+                Filters.eq(MgdClient.ID, client.getId())
         );
         Bson updates = Updates.combine(
-                Updates.set("firstName", client.getFirstName()),
-                Updates.set("lastName", client.getFirstName())
+                Updates.set(MgdClient.FIRST_NAME, client.getFirstName()),
+                Updates.set(MgdClient.LAST_NAME, client.getFirstName()),
+                Updates.set(MgdClient.ACTIVE, client.getActive())
         );
         collection.updateOne(filters, updates);
         return client;
-    }
-
-    @Override
-    public void activate(UUID id) throws Exception {
-        Client client = getById(id);
-
-        if (client.getActive()) {
-            //TODO change exception
-            throw new Exception("Client is already activated");
-        }
-
-        Bson filters = Filters.and(
-                Filters.eq("_clazz", "client"),
-                Filters.eq("_id", id)
-        );
-        Bson update = Updates.set("active", true);
-        collection.updateOne(filters, update);
-    }
-
-    @Override
-    public void deactivate(UUID id) throws Exception {
-        Client client = getById(id);
-
-        if (!client.getActive()) {
-            //TODO change exception
-            throw new Exception("Client is already deactivated");
-        }
-        Bson filters = Filters.and(
-                Filters.eq("_clazz", "client"),
-                Filters.eq("_id", id)
-        );
-        Bson update = Updates.set("active", false);
-        collection.updateOne(filters, update);
-
     }
 }
