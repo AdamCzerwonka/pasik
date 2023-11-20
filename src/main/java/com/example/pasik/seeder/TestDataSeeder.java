@@ -25,9 +25,9 @@ public class TestDataSeeder {
     private final RentManager rentManager;
     private final ClientManager clientManager;
 
-    private static final List<UUID> realEstateIds = new ArrayList<>();
-    private static final List<UUID> rentIds = new ArrayList<>();
-    private static final List<UUID> clientIds = new ArrayList<>();
+    private static final List<RealEstate> realEstates = new ArrayList<>();
+    private static final List<Rent> rents = new ArrayList<>();
+    private static final List<Client> clients = new ArrayList<>();
 
     public TestDataSeeder(final RealEstateManager realEstateManager, final RentManager rentManager, final ClientManager clientManager) {
         this.realEstateManager = realEstateManager;
@@ -37,6 +37,10 @@ public class TestDataSeeder {
 
     @Bean
     public CommandLineRunner initTestData() {
+        realEstates.clear();
+        rents.clear();
+        clients.clear();
+
         return args -> {
             Client testClient = new Client(null, "firstName", "lastName", "login", true);
             testClient = clientManager.create(testClient);
@@ -45,33 +49,33 @@ public class TestDataSeeder {
             Client inactiveClient = new Client(null, "firstNameInactive", "lastNameInactive", "loginInactive", false);
             inactiveClient = clientManager.create(inactiveClient);
 
-            clientIds.add(testClient.getId());
-            clientIds.add(testClient2.getId());
-            clientIds.add(inactiveClient.getId());
+            clients.add(testClient);
+            clients.add(testClient2);
+            clients.add(inactiveClient);
 
             RealEstate testRealEstate = new RealEstate(null,"name", "address", 15, 15);
             testRealEstate = realEstateManager.create(testRealEstate);
             RealEstate testRealEstate2 = new RealEstate(null,"name2", "address2", 21, 21);
             testRealEstate2 = realEstateManager.create(testRealEstate2);
 
-            realEstateIds.add(testRealEstate.getId());
-            realEstateIds.add(testRealEstate2.getId());
+            realEstates.add(testRealEstate);
+            realEstates.add(testRealEstate2);
 
             Rent rent = rentManager.create(testClient.getId(), testRealEstate.getId(), LocalDate.now());
 
-            rentIds.add(rent.getId());
+            rents.add(rent);
         };
     }
 
-    public static List<UUID> getRealEstateIds() {
-        return Collections.unmodifiableList(realEstateIds);
+    public static List<RealEstate> getRealEstates() {
+        return Collections.unmodifiableList(realEstates);
     }
 
-    public static List<UUID> getRentIds() {
-        return Collections.unmodifiableList(rentIds);
+    public static List<Rent> getRents() {
+        return Collections.unmodifiableList(rents);
     }
 
-    public static List<UUID> getClientIds() {
-        return Collections.unmodifiableList(clientIds);
+    public static List<Client> getClients() {
+        return Collections.unmodifiableList(clients);
     }
 }

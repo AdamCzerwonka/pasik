@@ -3,7 +3,7 @@ package com.example.pasik.controllers;
 import com.example.pasik.model.dto.Client.ClientCreateRequest;
 import com.example.pasik.model.dto.Client.ClientUpdateRequest;
 import com.example.pasik.model.dto.RealEstate.RealEstateRequest;
-import com.example.pasik.model.dto.Rent.RentRequest;
+import com.example.pasik.model.dto.Rent.RentCreateRequest;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
@@ -512,7 +512,7 @@ public class ClientControllerTests {
                 .extract()
                 .path("id");
 
-        RentRequest rentRequest = RentRequest
+        RentCreateRequest rentCreateRequest = RentCreateRequest
                 .builder()
                 .clientId(UUID.fromString(id))
                 .realEstateId(UUID.fromString(realEstateId))
@@ -523,7 +523,7 @@ public class ClientControllerTests {
         String rentId = given()
                 .contentType(ContentType.JSON)
                 .spec(rentSpec)
-                .body(rentRequest)
+                .body(rentCreateRequest)
                 .when()
                 .post()
                 .then()

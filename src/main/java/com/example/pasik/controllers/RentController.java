@@ -1,16 +1,12 @@
 package com.example.pasik.controllers;
 
 import com.example.pasik.managers.RentManager;
-import com.example.pasik.model.RealEstate;
 import com.example.pasik.model.Rent;
-import com.example.pasik.model.dto.Rent.RentRequest;
-import jakarta.servlet.http.HttpServletRequest;
+import com.example.pasik.model.dto.Rent.RentCreateRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -26,18 +22,27 @@ public class RentController {
     }
 
     @PostMapping
-    public ResponseEntity<Rent> create(@RequestBody @Valid RentRequest rentRequest) throws Exception {
-        var result = rentManager.create(
-                rentRequest.getClientId(),
-                rentRequest.getRealEstateId(),
-                rentRequest.getStartDate());
-        return ResponseEntity.created(new URI("http://localhost:8080/rent/" + result.getId())).body(result);
+    public ResponseEntity<?> create(@RequestBody @Valid RentCreateRequest rentRequest) throws Exception {
+        try {
+            var result = rentManager.create(
+                    rentRequest.getClientId(),
+                    rentRequest.getRealEstateId(),
+                    rentRequest.getStartDate());
+
+            return ResponseEntity.created(new URI("http://localhost:8080/rent/" + result.getId())).body(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PostMapping("/{id}/end")
     public ResponseEntity<?> endRent(@PathVariable UUID id) throws Exception {
-        rentManager.endRent(id);
-        return ResponseEntity.ok().build();
+        try {
+            rentManager.endRent(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping
@@ -58,8 +63,12 @@ public class RentController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable UUID id) throws Exception {
-        rentManager.delete(id);
+        try {
+            rentManager.delete(id);
 
-        return ResponseEntity.notFound().build();
+            return ResponseEntity.ok("Deleted");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }

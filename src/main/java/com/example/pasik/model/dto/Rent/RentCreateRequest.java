@@ -1,6 +1,5 @@
 package com.example.pasik.model.dto.Rent;
 
-import com.example.pasik.model.Rent;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -15,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RentRequest {
+public class RentCreateRequest {
     @NotNull(message = "ClientId cannot be null")
     private UUID clientId;
     @NotNull(message = "RealEstateId cannot be null")
