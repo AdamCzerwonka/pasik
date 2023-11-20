@@ -1,5 +1,7 @@
 package com.example.pasik.repositories.mongo;
 
+import com.example.pasik.exceptions.ClientExceptions.LoginAlreadyTakenException;
+import com.example.pasik.exceptions.NotFoundException;
 import com.example.pasik.model.Client;
 import com.example.pasik.model.dto.Client.MgdClient;
 import com.example.pasik.repositories.ClientRepository;
@@ -25,42 +27,31 @@ public class MongoClientRepository implements ClientRepository {
     }
 
     @Override
-    public List<Client> get() throws Exception {
+    public List<Client> get() {
         Bson filter = Filters.eq("_clazz", "client");
-        List<Client> result = collection
+
+        return collection
                 .find(filter)
                 .into(new ArrayList<>())
                 .stream()
                 .map(MgdClient::toClient)
                 .toList();
-
-        if (result.isEmpty()) {
-            //TODO change exception
-            throw new Exception("No clients found");
-        }
-        return result;
     }
 
     @Override
-    public List<Client> findClientsByLogin(String login) throws Exception {
+    public List<Client> findClientsByLogin(String login) {
         Pattern pattern = Pattern.compile(login, Pattern.CASE_INSENSITIVE);
         Bson filters = Filters.and(
                 Filters.eq("_clazz", "client"),
                 Filters.regex("login", pattern)
         );
 
-        List<Client> result = collection
+        return collection
                 .find(filters)
                 .into(new ArrayList<>())
                 .stream()
                 .map(MgdClient::toClient)
                 .toList();
-
-        if (result.isEmpty()) {
-            //TODO change exception
-            throw new Exception("No clients found");
-        }
-        return result;
     }
 
     @Override
@@ -77,30 +68,25 @@ public class MongoClientRepository implements ClientRepository {
     }
 
     @Override
-    public Client getByLogin(String login) throws Exception {
+    public Optional<Client> getByLogin(String login) {
         Bson filters = Filters.and(
                 Filters.eq("_clazz", "client"),
                 Filters.eq("login", login)
         );
         MgdClient result = collection.find(filters).first();
         if (result == null) {
-            throw new Exception("Client not found");
+            return Optional.empty();
         }
-        return result.toClient();
+
+        return Optional.of(result.toClient());
     }
 
     @Override
-    public Client create(Client client) throws Exception {
-        boolean found = false;
-        try {
-            Client existing = getByLogin(client.getLogin());
-            found = true;
-        } catch (Exception ignored) {
-        }
+    public Client create(Client client) throws LoginAlreadyTakenException {
+        Optional<Client> existing = getByLogin(client.getLogin());
 
-        if (found) {
-            //TODO change exception
-            throw new Exception("Login already in use");
+        if (existing.isPresent()) {
+            throw new LoginAlreadyTakenException(client.getLogin());
         }
 
         client.setId(UUID.randomUUID());
@@ -110,7 +96,7 @@ public class MongoClientRepository implements ClientRepository {
     }
 
     @Override
-    public Client update(Client client) throws Exception {
+    public Client update(Client client) throws NotFoundException {
         Bson filters = Filters.and(
                 Filters.eq("_clazz", "client"),
                 Filters.eq(MgdClient.ID, client.getId())
@@ -125,7 +111,7 @@ public class MongoClientRepository implements ClientRepository {
         Optional<Client> response = getById(client.getId());
 
         if (response.isEmpty()) {
-            throw new Exception("Client not found");
+            throw new NotFoundException("Client with given id does not exists");
         }
 
         return response.get();

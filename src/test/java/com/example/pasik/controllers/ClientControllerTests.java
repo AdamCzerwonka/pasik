@@ -122,7 +122,8 @@ public class ClientControllerTests {
                 .get()
                 .then()
                 .assertThat()
-                .statusCode(404);
+                .statusCode(200)
+                .body("size()", equalTo(0));
 
         ClientCreateRequest clientCreteRequest = ClientCreateRequest
                 .builder()
@@ -206,7 +207,8 @@ public class ClientControllerTests {
                 .get("/login/many/test")
                 .then()
                 .assertThat()
-                .statusCode(404);
+                .statusCode(200)
+                .body("size()", equalTo(0));
 
         ClientCreateRequest clientCreteRequest = ClientCreateRequest
                 .builder()

@@ -1,5 +1,7 @@
 package com.example.pasik.managers.impl;
 
+import com.example.pasik.exceptions.ClientExceptions.LoginAlreadyTakenException;
+import com.example.pasik.exceptions.NotFoundException;
 import com.example.pasik.managers.ClientManager;
 import com.example.pasik.model.Client;
 import com.example.pasik.repositories.ClientRepository;
@@ -18,42 +20,49 @@ public class ClientManagerImpl implements ClientManager {
     }
 
     @Override
-    public List<Client> get() throws Exception {
+    public List<Client> get() {
         return clientRepository.get();
     }
 
     @Override
-    public List<Client> findClientsByLogin(String login) throws Exception {
+    public List<Client> findClientsByLogin(String login) {
         return clientRepository.findClientsByLogin(login);
     }
 
     @Override
-    public Client getById(UUID id) throws Exception {
+    public Client getById(UUID id) throws NotFoundException {
         Optional<Client> client = clientRepository.getById(id);
+
         if (client.isEmpty()) {
-            throw new Exception("Client not found");
+            throw new NotFoundException("Client with given id does not exists");
         }
 
         return client.get();
     }
 
     @Override
-    public Client getByLogin(String login) throws Exception {
-        return clientRepository.getByLogin(login);
+    public Client getByLogin(String login) throws NotFoundException {
+        Optional<Client> client = clientRepository.getByLogin(login);
+
+        if (client.isEmpty()) {
+            throw new NotFoundException("Client with given id does not exists");
+        }
+
+        return  client.get();
     }
 
     @Override
-    public Client create(Client client) throws Exception {
+    public Client create(Client client) throws LoginAlreadyTakenException {
         return clientRepository.create(client);
     }
 
     @Override
-    public Client update(Client client) throws Exception {
+    public Client update(Client client) throws NotFoundException {
         return clientRepository.update(client);
     }
 
     @Override
-    public void setActiveStatus(UUID id, boolean active) throws Exception {
+    public void setActiveStatus(UUID id, boolean active) throws NotFoundException {
         Optional<Client> clientResult = clientRepository.getById(id);
         if (clientResult.isEmpty()) {
             throw new RuntimeException("Not found");
