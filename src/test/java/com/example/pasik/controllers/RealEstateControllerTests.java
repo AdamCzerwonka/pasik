@@ -231,4 +231,34 @@ public class RealEstateControllerTests {
                 .assertThat()
                 .statusCode(HttpStatus.BAD_REQUEST.value());
     }
+
+    @Test
+    public void testUpdateShouldSuccessWhenGivenCorrectData() {
+        String realEstateId = given()
+                .contentType(ContentType.JSON)
+                .body(realEstate1)
+                .when()
+                .post("/realestate")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .path("id");
+
+        var realEstateUpdate = RealEstateRequest.builder().name("test123").address("test123")
+                .price(6)
+                .area(10)
+                .build();
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(realEstateUpdate)
+                .pathParam("id", realEstateId)
+                .when()
+                .put("/realestate/{id}")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value())
+                .body("name", is(realEstateUpdate.getName()));
+    }
 }
