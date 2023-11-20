@@ -2,7 +2,7 @@ package com.example.pasik.controllers;
 
 import com.example.pasik.model.dto.Client.ClientCreateRequest;
 import com.example.pasik.model.dto.RealEstate.RealEstateRequest;
-import com.example.pasik.model.dto.Rent.RentRequest;
+import com.example.pasik.model.dto.Rent.RentCreateRequest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
@@ -207,7 +207,7 @@ public class RealEstateControllerTests {
                 .extract()
                 .path("id");
 
-        RentRequest rentRequest = RentRequest
+        RentCreateRequest rentRequest = RentCreateRequest
                 .builder()
                 .clientId(UUID.fromString(clientId))
                 .realEstateId(UUID.fromString(realEstateId))
@@ -260,5 +260,36 @@ public class RealEstateControllerTests {
                 .assertThat()
                 .statusCode(HttpStatus.OK.value())
                 .body("name", is(realEstateUpdate.getName()));
+    }
+
+    @Test
+    public void testUpdateShouldFailWhenGivenInvalidData() {
+        String realEstateId = given()
+                .contentType(ContentType.JSON)
+                .body(realEstate1)
+                .when()
+                .post("/realestate")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .path("id");
+
+        var realEstateUpdate = RealEstateRequest
+                .builder()
+                .address("")
+                .price(0)
+                .area(-100)
+                .build();
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(realEstateUpdate)
+                .pathParam("id", realEstateId)
+                .when()
+                .put("/realestate/{id}")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 }
