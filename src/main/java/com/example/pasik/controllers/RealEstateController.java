@@ -1,6 +1,7 @@
 package com.example.pasik.controllers;
 
 import com.example.pasik.exceptions.NotFoundException;
+import com.example.pasik.exceptions.RealEstateRentedException;
 import com.example.pasik.managers.RealEstateManager;
 import com.example.pasik.managers.RentManager;
 import com.example.pasik.model.RealEstate;
@@ -52,7 +53,11 @@ public class RealEstateController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable UUID id) {
-        realEstateManager.delete(id);
+        try {
+            realEstateManager.delete(id);
+        } catch (RealEstateRentedException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
 
         return ResponseEntity.notFound().build();
     }
