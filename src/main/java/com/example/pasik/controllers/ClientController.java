@@ -62,7 +62,7 @@ public class ClientController {
         }
     }
 
-    @GetMapping("/login/s/{login}")
+    @GetMapping("/login/single/{login}")
     public ResponseEntity<?> getByLogin(@PathVariable String login) {
         try {
             var result = clientManager.getByLogin(login);
@@ -87,7 +87,7 @@ public class ClientController {
     @PutMapping
     public ResponseEntity<?> update(@RequestBody ClientUpdateRequest request) {
         try {
-            var result = clientManager.create(request.ToClient());
+            var result = clientManager.update(request.ToClient());
 
             return ResponseEntity.ok(result);
         } catch (Exception e) {
