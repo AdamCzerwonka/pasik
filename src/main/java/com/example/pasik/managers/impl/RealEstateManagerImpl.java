@@ -1,5 +1,6 @@
 package com.example.pasik.managers.impl;
 
+import com.example.pasik.exceptions.NotFoundException;
 import com.example.pasik.managers.RealEstateManager;
 import com.example.pasik.model.RealEstate;
 import com.example.pasik.model.Rent;
@@ -31,10 +32,10 @@ public class RealEstateManagerImpl implements RealEstateManager {
     }
 
     @Override
-    public RealEstate getById(UUID id) throws Exception {
+    public RealEstate getById(UUID id) throws NotFoundException {
         Optional<RealEstate> realEstate = realEstateRepository.getById(id);
         if (realEstate.isEmpty()) {
-            throw new Exception("Real estate not found");
+            throw new NotFoundException("Real estate with given id does not exists");
         }
 
         return realEstate.get();

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.UUID;
 
@@ -20,6 +21,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class RealEstateControllerTests {
     private final static String BASE_URI = "http://localhost";
 
@@ -33,25 +35,28 @@ public class RealEstateControllerTests {
     }
 
     @Test
-    public void createRealEstate() throws JSONException {
-        JSONObject newRealEstate = new JSONObject();
-        newRealEstate.put("name", "test");
-        newRealEstate.put("address", "test");
-        newRealEstate.put("price", 10.1);
-        newRealEstate.put("area", 5.5);
+    public void testCreateShouldSuccessWhenPassingCorrectData() {
+        var realEstate = RealEstateRequest
+                .builder()
+                .name("test")
+                .address("test")
+                .price(10.1)
+                .area(5.5)
+                .build();
 
         given()
                 .contentType(ContentType.JSON)
-                .body(newRealEstate.toString())
+                .body(realEstate)
                 .when()
                 .post("/realestate")
                 .then()
                 .assertThat()
+                .body("id", Matchers.notNullValue())
                 .statusCode(201);
     }
 
     @Test
-    public void getAll() {
+    public void testGetAllShouldReturnAllExistingRealEstates() {
         given()
                 .contentType(ContentType.JSON)
                 .when()

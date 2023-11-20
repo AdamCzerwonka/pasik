@@ -1,5 +1,7 @@
 package com.example.pasik.controllers;
 
+import com.example.pasik.exceptions.NotFoundException;
+import com.example.pasik.model.Error;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,5 +25,13 @@ public class GlobalExceptionHandlers {
             errors.put(fieldName, errorMessage);
         });
         return errors;
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException.class)
+    public Error handleNotFoundExceptions(NotFoundException ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("notFound", ex.getMessage());
+        return new Error(HttpStatus.NOT_FOUND.value(), errors);
     }
 }

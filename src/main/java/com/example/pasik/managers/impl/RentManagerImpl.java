@@ -82,6 +82,7 @@ public class RentManagerImpl implements RentManager {
             throw new Exception("Rent has already been finished");
         }
 
+        //TODO: check if endDate is not in the past and is after startDate
         rent.setEndDate(LocalDate.now());
         rentRepository.update(rent);
     }
