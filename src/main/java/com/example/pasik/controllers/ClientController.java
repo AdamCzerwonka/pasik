@@ -95,8 +95,8 @@ public class ClientController {
         }
     }
 
-    @PostMapping("/activate")
-    public ResponseEntity<?> activate(@RequestBody UUID id) {
+    @PostMapping("/activate/{id}")
+    public ResponseEntity<?> activate(@PathVariable UUID id) {
         try {
             clientManager.setActiveStatus(id, true);
 
@@ -106,8 +106,8 @@ public class ClientController {
         }
     }
 
-    @PostMapping("/deactivate")
-    public ResponseEntity<?> deactivate(@RequestBody UUID id) {
+    @PostMapping("/deactivate/{id}")
+    public ResponseEntity<?> deactivate(@PathVariable UUID id) {
         try {
             clientManager.setActiveStatus(id, false);
 

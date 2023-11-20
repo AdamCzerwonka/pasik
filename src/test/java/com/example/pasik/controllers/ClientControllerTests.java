@@ -2,16 +2,20 @@ package com.example.pasik.controllers;
 
 import com.example.pasik.model.dto.Client.ClientCreateRequest;
 import com.example.pasik.model.dto.Client.ClientUpdateRequest;
+import com.example.pasik.model.dto.RealEstate.RealEstateRequest;
+import com.example.pasik.model.dto.Rent.RentRequest;
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
@@ -20,14 +24,15 @@ import static org.hamcrest.Matchers.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ClientControllerTests {
-    private final static String BASE_URI = "http://localhost/client";
+    private final static String BASE_URI = "http://localhost";
+    private final static String ENDPOINT = "/client";
 
     @LocalServerPort
     private int port;
 
     @BeforeEach
     public void configureRestAssured() {
-        RestAssured.baseURI = BASE_URI;
+        RestAssured.baseURI = BASE_URI + ENDPOINT;
         RestAssured.port = port;
     }
 
@@ -53,7 +58,7 @@ public class ClientControllerTests {
     }
 
     @Test
-    public void testCreateShouldFailWhenAddingIncorrectData() throws JSONException {
+    public void testCreateShouldFailWhenAddingIncorrectData() {
         ClientCreateRequest clientCreteRequest = ClientCreateRequest
                 .builder()
                 .firstName("")
@@ -73,7 +78,7 @@ public class ClientControllerTests {
     }
 
     @Test
-    public void testCreateShouldFailWhenDuplicatingLogin() throws JSONException {
+    public void testCreateShouldFailWhenDuplicatingLogin() {
         ClientCreateRequest clientCreteRequest1 = ClientCreateRequest
                 .builder()
                 .firstName("TestFirstName1")
@@ -169,7 +174,9 @@ public class ClientControllerTests {
 
         given()
                 .contentType(ContentType.JSON)
-                .get("/" + id)
+                .pathParam("id", id)
+                .when()
+                .get("/{id}")
                 .then()
                 .assertThat()
                 .statusCode(200)
@@ -184,7 +191,8 @@ public class ClientControllerTests {
     public void testGetByIdShouldFailWhenPassingRandomId() {
         given()
                 .contentType(ContentType.JSON)
-                .get("/" + UUID.randomUUID())
+                .pathParam("id", UUID.randomUUID())
+                .get("/{id}")
                 .then()
                 .assertThat()
                 .statusCode(404);
@@ -250,7 +258,9 @@ public class ClientControllerTests {
 
         given()
                 .contentType(ContentType.JSON)
-                .get("/login/single/" + clientCreteRequest.getLogin())
+                .pathParam("id", clientCreteRequest.getLogin())
+                .when()
+                .get("/login/single/{id}")
                 .then()
                 .assertThat()
                 .statusCode(200)
@@ -262,7 +272,7 @@ public class ClientControllerTests {
     }
 
     @Test
-    public void testGetByLoginShouldFailWhenPassingRandomId() {
+    public void testGetByLoginShouldFailWhenPassingRandomLogin() {
         given()
                 .contentType(ContentType.JSON)
                 .get("/login/single/abc123")
@@ -290,8 +300,7 @@ public class ClientControllerTests {
                 .assertThat()
                 .statusCode(201)
                 .extract()
-                .path("id")
-                .toString();
+                .path("id");
 
         ClientUpdateRequest clientUpdateRequest = ClientUpdateRequest
                 .builder()
@@ -336,8 +345,7 @@ public class ClientControllerTests {
                 .assertThat()
                 .statusCode(201)
                 .extract()
-                .path("id")
-                .toString();
+                .path("id");
 
         ClientUpdateRequest clientUpdateRequest = ClientUpdateRequest
                 .builder()
@@ -356,5 +364,226 @@ public class ClientControllerTests {
                 .then()
                 .assertThat()
                 .statusCode(400);
+    }
+
+    @Test
+    public void testActivateShouldActiveDeactivatedAccount() {
+        ClientCreateRequest clientCreteRequest = ClientCreateRequest
+                .builder()
+                .firstName("TestFirstName1")
+                .lastName("TestLastName1")
+                .login("testLogin1")
+                .active(false)
+                .build();
+
+        String id = given()
+                .contentType(ContentType.JSON)
+                .body(clientCreteRequest)
+                .when()
+                .post()
+                .then()
+                .assertThat()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/activate/" + id)
+                .then()
+                .assertThat()
+                .statusCode(200);
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("id", id)
+                .when()
+                .get("/{id}")
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("id", equalTo(id))
+                .body("active", equalTo(!clientCreteRequest.getActive()));
+    }
+
+    @Test
+    public void testDeactivateShouldDeactivateActivatedAccount() {
+        ClientCreateRequest clientCreteRequest = ClientCreateRequest
+                .builder()
+                .firstName("TestFirstName1")
+                .lastName("TestLastName1")
+                .login("testLogin1")
+                .active(true)
+                .build();
+
+        String id = given()
+                .contentType(ContentType.JSON)
+                .body(clientCreteRequest)
+                .when()
+                .post()
+                .then()
+                .assertThat()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/deactivate/" + id)
+                .then()
+                .assertThat()
+                .statusCode(200);
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("id", id)
+                .when()
+                .get("/{id}")
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("id", equalTo(id))
+                .body("active", equalTo(!clientCreteRequest.getActive()));
+    }
+
+    @Test
+    public void testGetRentsShouldReturnCorrectAmountOfData() {
+        ClientCreateRequest clientCreteRequest = ClientCreateRequest
+                .builder()
+                .firstName("TestFirstName1")
+                .lastName("TestLastName1")
+                .login("testLogin1")
+                .active(true)
+                .build();
+
+        String id = given()
+                .contentType(ContentType.JSON)
+                .body(clientCreteRequest)
+                .when()
+                .post()
+                .then()
+                .assertThat()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("id", id)
+                .pathParam("active", true)
+                .when()
+                .get("/{id}/rents?current={active}")
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("size()", is(0));
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("id", id)
+                .pathParam("active", false)
+                .when()
+                .get("/{id}/rents?current={active}")
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("size()", is(0));
+
+        RealEstateRequest realEstateRequest = RealEstateRequest
+                .builder()
+                .name("test")
+                .address("test")
+                .area(10)
+                .price(15)
+                .build();
+
+        RequestSpecification realEstateSpec = new RequestSpecBuilder().setBaseUri(BASE_URI + "/realestate").build();
+        String realEstateId = given()
+                .contentType(ContentType.JSON)
+                .spec(realEstateSpec)
+                .body(realEstateRequest)
+                .when()
+                .post()
+                .then()
+                .assertThat()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        RentRequest rentRequest = RentRequest
+                .builder()
+                .clientId(UUID.fromString(id))
+                .realEstateId(UUID.fromString(realEstateId))
+                .startDate(LocalDate.now())
+                .build();
+
+        RequestSpecification rentSpec = new RequestSpecBuilder().setBaseUri(BASE_URI + "/rent").build();
+        String rentId = given()
+                .contentType(ContentType.JSON)
+                .spec(rentSpec)
+                .body(rentRequest)
+                .when()
+                .post()
+                .then()
+                .assertThat()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("id", id)
+                .pathParam("active", true)
+                .when()
+                .get("/{id}/rents?current={active}")
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("size()", is(1));
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("id", id)
+                .pathParam("active", false)
+                .when()
+                .get("/{id}/rents?current={active}")
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("size()", is(0));
+
+        given()
+                .contentType(ContentType.JSON)
+                .spec(rentSpec)
+                .pathParam("id", rentId)
+                .when()
+                .post("{id}/end")
+                .then()
+                .assertThat()
+                .statusCode(200);
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("id", id)
+                .pathParam("active", false)
+                .when()
+                .get("/{id}/rents?current={active}")
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("size()", is(1));
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("id", id)
+                .pathParam("active", true)
+                .when()
+                .get("/{id}/rents?current={active}")
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("size()", is(0));
     }
 }

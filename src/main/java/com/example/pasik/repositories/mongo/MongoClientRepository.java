@@ -122,7 +122,12 @@ public class MongoClientRepository implements ClientRepository {
         );
         collection.updateOne(filters, updates);
 
-        Client response = getById(client.getId()).get();
-        return response;
+        Optional<Client> response = getById(client.getId());
+
+        if (response.isEmpty()) {
+            throw new Exception("Client not found");
+        }
+
+        return response.get();
     }
 }

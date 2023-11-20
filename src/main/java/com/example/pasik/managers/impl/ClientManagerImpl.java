@@ -6,6 +6,7 @@ import com.example.pasik.repositories.ClientRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -28,7 +29,7 @@ public class ClientManagerImpl implements ClientManager {
 
     @Override
     public Client getById(UUID id) throws Exception {
-        var client = clientRepository.getById(id);
+        Optional<Client> client = clientRepository.getById(id);
         if (client.isEmpty()) {
             throw new Exception("Client not found");
         }
@@ -53,12 +54,12 @@ public class ClientManagerImpl implements ClientManager {
 
     @Override
     public void setActiveStatus(UUID id, boolean active) throws Exception {
-        var clientResult = clientRepository.getById(id);
+        Optional<Client> clientResult = clientRepository.getById(id);
         if (clientResult.isEmpty()) {
             throw new RuntimeException("Not found");
         }
 
-        var client = clientResult.get();
+        Client client = clientResult.get();
         client.setActive(active);
 
         clientRepository.update(client);
