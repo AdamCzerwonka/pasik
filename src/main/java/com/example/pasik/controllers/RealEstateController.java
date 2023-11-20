@@ -1,5 +1,6 @@
 package com.example.pasik.controllers;
 
+import com.example.pasik.exceptions.NotFoundException;
 import com.example.pasik.managers.RealEstateManager;
 import com.example.pasik.managers.RentManager;
 import com.example.pasik.model.RealEstate;
@@ -8,15 +9,11 @@ import com.example.pasik.model.dto.RealEstate.RealEstateRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController()
@@ -42,14 +39,10 @@ public class RealEstateController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable UUID id) {
-        try {
-            RealEstate result = realEstateManager.getById(id);
+    public ResponseEntity<?> getById(@PathVariable UUID id) throws NotFoundException {
+        RealEstate result = realEstateManager.getById(id);
 
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("{id}/rents")

@@ -56,7 +56,7 @@ public class MongoRealEstateRepository implements RealEstateRepository {
                 Updates.set(MgdRealEstate.PRICE, realEstate.getPrice())
         );
 
-        Bson filter = Filters.eq("_id", realEstate.getId());
+        Bson filter = Filters.eq(MgdRealEstate.ID, realEstate.getId());
 
         collection.updateOne(filter, updates);
         return getById(realEstate.getId()).get();
