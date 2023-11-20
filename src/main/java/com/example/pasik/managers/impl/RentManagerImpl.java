@@ -77,6 +77,11 @@ public class RentManagerImpl implements RentManager {
         }
         Rent rent = rentResult.get();
 
+        if (rent.getEndDate() != null) {
+            //FIXME: change exception to sth more more accurate
+            throw new Exception("Rent has already been finished");
+        }
+
         rent.setEndDate(LocalDate.now());
         rentRepository.update(rent);
     }
