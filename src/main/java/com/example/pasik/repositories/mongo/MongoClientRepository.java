@@ -117,10 +117,12 @@ public class MongoClientRepository implements ClientRepository {
         );
         Bson updates = Updates.combine(
                 Updates.set(MgdClient.FIRST_NAME, client.getFirstName()),
-                Updates.set(MgdClient.LAST_NAME, client.getFirstName()),
+                Updates.set(MgdClient.LAST_NAME, client.getLastName()),
                 Updates.set(MgdClient.ACTIVE, client.getActive())
         );
         collection.updateOne(filters, updates);
-        return client;
+
+        Client response = getById(client.getId()).get();
+        return response;
     }
 }

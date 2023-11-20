@@ -2,11 +2,18 @@ package com.example.pasik.model.dto.Client;
 
 import com.example.pasik.model.Client;
 import com.example.pasik.model.dto.User.UserUpdateRequest;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@NoArgsConstructor
+import java.util.UUID;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class ClientUpdateRequest extends UserUpdateRequest {
+    @Builder
+    public ClientUpdateRequest(UUID id, String firstName, String lastName, String login, Boolean active) {
+        super(id, firstName, lastName, login, active);
+    }
+
     public Client ToClient() {
         return new Client(getId(), getFirstName(), getLastName(), getLogin(), getActive());
     }
