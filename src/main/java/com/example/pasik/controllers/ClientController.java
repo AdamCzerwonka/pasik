@@ -5,6 +5,7 @@ import com.example.pasik.managers.RentManager;
 import com.example.pasik.model.Rent;
 import com.example.pasik.model.dto.Client.ClientCreateRequest;
 import com.example.pasik.model.dto.Client.ClientUpdateRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -74,7 +75,7 @@ public class ClientController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody ClientCreateRequest request) {
+    public ResponseEntity<?> create(@Valid @RequestBody ClientCreateRequest request) {
         try {
             var result = clientManager.create(request.ToClient());
 
@@ -85,7 +86,7 @@ public class ClientController {
     }
 
     @PutMapping
-    public ResponseEntity<?> update(@RequestBody ClientUpdateRequest request) {
+    public ResponseEntity<?> update(@Valid @RequestBody ClientUpdateRequest request) {
         try {
             var result = clientManager.update(request.ToClient());
 
