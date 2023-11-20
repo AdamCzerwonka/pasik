@@ -94,7 +94,7 @@ public class RealEstateControllerTests {
     }
 
     @Test
-    public void getFail() {
+    public void getByIdShouldFail() {
         given()
                 .contentType(ContentType.JSON)
                 .pathParam("id", UUID.randomUUID())

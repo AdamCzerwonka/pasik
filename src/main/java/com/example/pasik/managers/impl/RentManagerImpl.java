@@ -44,6 +44,10 @@ public class RentManagerImpl implements RentManager {
             throw new RuntimeException("chuj");
         }
 
+        if (!client.get().getActive()) {
+            //FIXME: change exception to sth more more accurate
+            throw new RuntimeException("Client is not active");
+        }
 
         var rents = rentRepository.getByRealEstateId(realEstateId, true);
         if (!rents.isEmpty()) {
@@ -100,6 +104,11 @@ public class RentManagerImpl implements RentManager {
 
     @Override
     public void delete(UUID id) throws Exception {
+        Optional<Rent> rent = rentRepository.getById(id);
+        if (rent.isPresent() && rent.get().getEndDate() != null) {
+            throw new RuntimeException("Rent has been archived and cannot be deleted");
+        }
+
         rentRepository.delete(id);
     }
 
