@@ -43,7 +43,7 @@ public class MongoClientRepository implements ClientRepository {
         Pattern pattern = Pattern.compile(login, Pattern.CASE_INSENSITIVE);
         Bson filters = Filters.and(
                 Filters.eq("_clazz", "client"),
-                Filters.regex("login", pattern)
+                Filters.regex(MgdClient.LOGIN, pattern)
         );
 
         return collection
@@ -58,7 +58,7 @@ public class MongoClientRepository implements ClientRepository {
     public Optional<Client> getById(UUID id) {
         Bson filters = Filters.and(
                 Filters.eq("_clazz", "client"),
-                Filters.eq("_id", id)
+                Filters.eq(MgdClient.ID, id)
         );
         MgdClient result = collection.find(filters).first();
         if (result == null) {
@@ -71,7 +71,7 @@ public class MongoClientRepository implements ClientRepository {
     public Optional<Client> getByLogin(String login) {
         Bson filters = Filters.and(
                 Filters.eq("_clazz", "client"),
-                Filters.eq("login", login)
+                Filters.eq(MgdClient.LOGIN, login)
         );
         MgdClient result = collection.find(filters).first();
         if (result == null) {
