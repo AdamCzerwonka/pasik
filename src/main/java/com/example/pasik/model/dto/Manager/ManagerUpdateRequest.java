@@ -3,9 +3,12 @@ package com.example.pasik.model.dto.Manager;
 import com.example.pasik.model.Manager;
 import com.example.pasik.model.dto.User.UserUpdateRequest;
 import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.UUID;
-
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class ManagerUpdateRequest extends UserUpdateRequest {
     @Builder
     public ManagerUpdateRequest(UUID id, String firstName, String lastName, String login, Boolean active) {
