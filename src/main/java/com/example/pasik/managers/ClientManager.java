@@ -1,11 +1,10 @@
 package com.example.pasik.managers;
 
-import com.example.pasik.exceptions.ClientExceptions.LoginAlreadyTakenException;
+import com.example.pasik.exceptions.LoginAlreadyTakenException;
 import com.example.pasik.exceptions.NotFoundException;
 import com.example.pasik.model.Client;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface ClientManager {

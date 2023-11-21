@@ -1,6 +1,6 @@
 package com.example.pasik.repositories.mongo;
 
-import com.example.pasik.exceptions.ClientExceptions.LoginAlreadyTakenException;
+import com.example.pasik.exceptions.LoginAlreadyTakenException;
 import com.example.pasik.exceptions.NotFoundException;
 import com.example.pasik.model.Client;
 import com.example.pasik.model.dto.Client.MgdClient;

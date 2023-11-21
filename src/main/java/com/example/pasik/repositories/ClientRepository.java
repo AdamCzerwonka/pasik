@@ -1,6 +1,6 @@
 package com.example.pasik.repositories;
 
-import com.example.pasik.exceptions.ClientExceptions.LoginAlreadyTakenException;
+import com.example.pasik.exceptions.LoginAlreadyTakenException;
 import com.example.pasik.exceptions.NotFoundException;
 import com.example.pasik.model.Client;
 

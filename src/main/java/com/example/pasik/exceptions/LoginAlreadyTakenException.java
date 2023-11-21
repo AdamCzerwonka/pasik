@@ -1,4 +1,4 @@
-package com.example.pasik.exceptions.ClientExceptions;
+package com.example.pasik.exceptions;
 
 public class LoginAlreadyTakenException extends Exception {
     public LoginAlreadyTakenException(String login) {

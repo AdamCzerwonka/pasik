@@ -35,7 +35,7 @@ public class RentManagerImpl implements RentManager {
         Optional<RealEstate> realEstate = realEstateRepository.getById(realEstateId);
 
         if (realEstate.isEmpty()) {
-            //FIXME: change exception to sth more more accurate
+            //FIXME: change exception to STH more more accurate
             throw new RuntimeException("chuj");
         }
 
