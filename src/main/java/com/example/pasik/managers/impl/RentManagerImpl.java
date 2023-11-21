@@ -1,5 +1,6 @@
 package com.example.pasik.managers.impl;
 
+import com.example.pasik.exceptions.NotFoundException;
 import com.example.pasik.managers.RentManager;
 import com.example.pasik.model.Client;
 import com.example.pasik.model.RealEstate;
@@ -36,23 +37,27 @@ public class RentManagerImpl implements RentManager {
 
         if (realEstate.isEmpty()) {
             //FIXME: change exception to STH more more accurate
-            throw new RuntimeException("chuj");
+            throw new Exception("realEstate with given id does not exist");
         }
 
         if (client.isEmpty()) {
             //FIXME: change exception to sth more more accurate
-            throw new RuntimeException("chuj");
+            throw new Exception("Client with given id does not exist");
         }
 
         if (!client.get().getActive()) {
             //FIXME: change exception to sth more more accurate
-            throw new RuntimeException("Client is not active");
+            throw new Exception("Client is not active");
+        }
+
+        if (startDate.isBefore(LocalDate.now())) {
+            throw new Exception("Cannot create rent with past date");
         }
 
         var rents = rentRepository.getByRealEstateId(realEstateId, true);
         if (!rents.isEmpty()) {
             //FIXME: change exception to sth more more accurate
-            throw new RuntimeException("chuj");
+            throw new Exception("This realEstate is already rented");
         }
 
 
@@ -73,7 +78,7 @@ public class RentManagerImpl implements RentManager {
         Optional<Rent> rentResult = rentRepository.getById(id);
         if (rentResult.isEmpty()) {
             //FIXME: change exception to sth more more accurate
-            throw new Exception("tes");
+            throw new Exception("Rent with given id does not exist");
         }
         Rent rent = rentResult.get();
 
@@ -82,8 +87,12 @@ public class RentManagerImpl implements RentManager {
             throw new Exception("Rent has already been finished");
         }
 
-        //TODO: check if endDate is not in the past and is after startDate
         rent.setEndDate(LocalDate.now());
+
+        if (rent.getEndDate().isBefore(rent.getStartDate())) {
+            throw new Exception("Cannot end rent that has not started");
+        }
+
         rentRepository.update(rent);
     }
 
@@ -98,11 +107,11 @@ public class RentManagerImpl implements RentManager {
     }
 
     @Override
-    public Rent getById(UUID id) throws Exception {
+    public Rent getById(UUID id) throws NotFoundException {
         Optional<Rent> rent = rentRepository.getById(id);
         if (rent.isEmpty()) {
             //FIXME: change exception to sth more more accurate
-            throw new Exception("Rent not found");
+            throw new NotFoundException("Rent with given id does not exist");
         }
 
         return rent.get();
@@ -112,7 +121,7 @@ public class RentManagerImpl implements RentManager {
     public void delete(UUID id) throws Exception {
         Optional<Rent> rent = rentRepository.getById(id);
         if (rent.isPresent() && rent.get().getEndDate() != null) {
-            throw new RuntimeException("Rent has been archived and cannot be deleted");
+            throw new Exception("Rent has been archived and cannot be deleted");
         }
 
         rentRepository.delete(id);
