@@ -154,6 +154,30 @@ public class RentControllerTests {
     }
 
     @Test
+    public void testCreateShouldFailWhenTryingToSetStartDateInThePast() {
+        List<Client> testClients = TestDataSeeder.getClients();
+        List<RealEstate> testRealEstates = TestDataSeeder.getRealEstates();
+        Client testClient = testClients.get(0);
+        RealEstate testRealEstate = testRealEstates.get(1);
+
+        RentCreateRequest rentCreateRequest = RentCreateRequest
+                .builder()
+                .clientId(testClient.getId())
+                .realEstateId(testRealEstate.getId())
+                .startDate(LocalDate.now().minusDays(1))
+                .build();
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(rentCreateRequest)
+                .when()
+                .post()
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
     public void testEndRentShouldPassWhenEndingRent() {
         List<Rent> testRents = TestDataSeeder.getRents();
         Rent rent = testRents.get(0);
@@ -207,6 +231,41 @@ public class RentControllerTests {
         given()
                 .contentType(ContentType.JSON)
                 .pathParam("id", rent.getId())
+                .when()
+                .post("/{id}/end")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    public void testEndRentShouldFailWhenTryingToEndRentThatHasNotStarted() {
+        List<Client> testClients = TestDataSeeder.getClients();
+        List<RealEstate> testRealEstates = TestDataSeeder.getRealEstates();
+        Client testClient = testClients.get(0);
+        RealEstate testRealEstate = testRealEstates.get(1);
+
+        RentCreateRequest rentCreateRequest = RentCreateRequest
+                .builder()
+                .clientId(testClient.getId())
+                .realEstateId(testRealEstate.getId())
+                .startDate(LocalDate.now().plusDays(1))
+                .build();
+
+        String id = given()
+                .contentType(ContentType.JSON)
+                .body(rentCreateRequest)
+                .when()
+                .post()
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .path("id");
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("id", UUID.fromString(id))
                 .when()
                 .post("/{id}/end")
                 .then()
