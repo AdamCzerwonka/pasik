@@ -6,6 +6,9 @@ import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.CreateCollectionOptions;
+import com.mongodb.client.model.ValidationOptions;
+import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -56,11 +59,104 @@ public class MongoClientConfiguration {
             logger.info("dropping db");
         }
 
+        MongoDatabase db = client.getDatabase(mongoConfig.getDbName());
+
+        createDbCollectionWithSchema(db, "realEstates", """
+                {
+                    "$jsonSchema": {
+                        "bsonType": "object",
+                        "required": ["address", "name", "area", "price"],
+                        "properties": {
+                            "address": {
+                                "bsonType": "string",
+                                "minLength": "1"
+                            },
+                            "name": {
+                                "bsonType": "string",
+                                "minLength": "1"
+                            },
+                            "area": {
+                                "bsonType": "double"
+                            },
+                            "price": {
+                                "bsonType": "double"
+                            }
+                        }
+                    }
+                }
+                """);
+
+        createDbCollectionWithSchema(db, "rents", """
+                {
+                    "$jsonSchema": {
+                        "bsonType": "object",
+                        "required": [
+                            "client",
+                            "realEstate",
+                            "startDate"
+                        ],
+                        "properties": {
+                            "client": {
+                                "bsonType": "object"
+                            },
+                            "realEstate": {
+                                "bsonType": "object"
+                            },
+                            "startDate": {
+                                "bsonType": "date"
+                            },
+                            "endDate": {
+                                "bsonType": "date"
+                            }
+                        }
+                    }
+                }
+                """);
+
+        createDbCollectionWithSchema(db, "users", """
+                {
+                    "$jsonSchema": {
+                        "bsonType": "object",
+                        "required": [
+                            "firstName",
+                            "lastName",
+                            "login",
+                            "active"
+                        ],
+                        "properties": {
+                            "firstName": {
+                                "bsonType": "string"
+                            },
+                            "lastName": {
+                                "bsonType": "string"
+                            },
+                            "login": {
+                                "bsonType": "string"
+                            },
+                            "active": {
+                                "bsonType": "bool"
+                            }
+                        }
+                    }
+                }
+                """);
+
         return client;
     }
 
     @Bean
     public MongoDatabase getMongoDatabase(MongoClient client, MongoConfig mongoConfig) {
         return client.getDatabase(mongoConfig.getDbName());
+    }
+
+    private void createDbCollectionWithSchema(MongoDatabase db, String collectionName, String schema) {
+        ValidationOptions validationOptions = new ValidationOptions().validator(
+                Document.parse(schema)
+        );
+
+        CreateCollectionOptions createCollectionOptions = new CreateCollectionOptions()
+                .validationOptions(validationOptions);
+
+        db.createCollection(collectionName, createCollectionOptions);
     }
 }
