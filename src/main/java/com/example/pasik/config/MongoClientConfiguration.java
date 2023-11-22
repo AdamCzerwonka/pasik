@@ -69,11 +69,11 @@ public class MongoClientConfiguration {
                         "properties": {
                             "address": {
                                 "bsonType": "string",
-                                "minLength": "1"
+                                "minLength": 1
                             },
                             "name": {
                                 "bsonType": "string",
-                                "minLength": "1"
+                                "minLength": 1
                             },
                             "area": {
                                 "bsonType": "double"
