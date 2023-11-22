@@ -65,7 +65,7 @@ public class ClientManagerImpl implements ClientManager {
     public void setActiveStatus(UUID id, boolean active) throws NotFoundException {
         Optional<Client> clientResult = clientRepository.getById(id);
         if (clientResult.isEmpty()) {
-            throw new RuntimeException("Not found");
+            throw new NotFoundException("Client with given id does not exists");
         }
 
         Client client = clientResult.get();
