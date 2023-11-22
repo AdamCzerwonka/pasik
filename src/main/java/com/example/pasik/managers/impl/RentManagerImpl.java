@@ -1,6 +1,6 @@
 package com.example.pasik.managers.impl;
 
-import com.example.pasik.exceptions.NotFoundException;
+import com.example.pasik.exceptions.*;
 import com.example.pasik.managers.RentManager;
 import com.example.pasik.model.Client;
 import com.example.pasik.model.RealEstate;
@@ -9,13 +9,14 @@ import com.example.pasik.repositories.ClientRepository;
 import com.example.pasik.repositories.RealEstateRepository;
 import com.example.pasik.repositories.RentRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Component
+@Service
 public class RentManagerImpl implements RentManager {
     private final RentRepository rentRepository;
     private final ClientRepository clientRepository;
@@ -31,35 +32,27 @@ public class RentManagerImpl implements RentManager {
     }
 
     @Override
-    public Rent create(UUID clientId, UUID realEstateId, LocalDate startDate) throws Exception {
+    public Rent create(UUID clientId, UUID realEstateId, LocalDate startDate) throws NotFoundException,
+            AccountInactiveException, RealEstateRentedException {
         Optional<Client> client = clientRepository.getById(clientId);
         Optional<RealEstate> realEstate = realEstateRepository.getById(realEstateId);
 
         if (realEstate.isEmpty()) {
-            //FIXME: change exception to STH more more accurate
-            throw new Exception("realEstate with given id does not exist");
+            throw new NotFoundException("realEstate with given id does not exist");
         }
 
         if (client.isEmpty()) {
-            //FIXME: change exception to sth more more accurate
-            throw new Exception("Client with given id does not exist");
+            throw new NotFoundException("Client with given id does not exist");
         }
 
         if (!client.get().getActive()) {
-            //FIXME: change exception to sth more more accurate
-            throw new Exception("Client is not active");
-        }
-
-        if (startDate.isBefore(LocalDate.now())) {
-            throw new Exception("Cannot create rent with past date");
+            throw new AccountInactiveException();
         }
 
         var rents = rentRepository.getByRealEstateId(realEstateId, true);
         if (!rents.isEmpty()) {
-            //FIXME: change exception to sth more more accurate
-            throw new Exception("This realEstate is already rented");
+            throw new RealEstateRentedException(realEstateId);
         }
-
 
         var rent = Rent
                 .builder()
@@ -74,23 +67,21 @@ public class RentManagerImpl implements RentManager {
     }
 
     @Override
-    public void endRent(UUID id) throws Exception {
+    public void endRent(UUID id) throws NotFoundException, RentEndedException, InvalidEndRentDateException {
         Optional<Rent> rentResult = rentRepository.getById(id);
         if (rentResult.isEmpty()) {
-            //FIXME: change exception to sth more more accurate
-            throw new Exception("Rent with given id does not exist");
+            throw new NotFoundException("Rent with given id does not exist");
         }
         Rent rent = rentResult.get();
 
         if (rent.getEndDate() != null) {
-            //FIXME: change exception to sth more more accurate
-            throw new Exception("Rent has already been finished");
+            throw new RentEndedException();
         }
 
         rent.setEndDate(LocalDate.now());
 
         if (rent.getEndDate().isBefore(rent.getStartDate())) {
-            throw new Exception("Cannot end rent that has not started");
+            throw new InvalidEndRentDateException();
         }
 
         rentRepository.update(rent);
@@ -110,7 +101,6 @@ public class RentManagerImpl implements RentManager {
     public Rent getById(UUID id) throws NotFoundException {
         Optional<Rent> rent = rentRepository.getById(id);
         if (rent.isEmpty()) {
-            //FIXME: change exception to sth more more accurate
             throw new NotFoundException("Rent with given id does not exist");
         }
 
@@ -118,10 +108,10 @@ public class RentManagerImpl implements RentManager {
     }
 
     @Override
-    public void delete(UUID id) throws Exception {
+    public void delete(UUID id) throws RentEndedException {
         Optional<Rent> rent = rentRepository.getById(id);
         if (rent.isPresent() && rent.get().getEndDate() != null) {
-            throw new Exception("Rent has been archived and cannot be deleted");
+            throw new RentEndedException();
         }
 
         rentRepository.delete(id);

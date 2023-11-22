@@ -1,5 +1,7 @@
 package com.example.pasik.controllers;
 
+import com.example.pasik.exceptions.LoginAlreadyTakenException;
+import com.example.pasik.exceptions.NotFoundException;
 import com.example.pasik.managers.ClientManager;
 import com.example.pasik.managers.RentManager;
 import com.example.pasik.model.Rent;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,24 +30,16 @@ public class ClientController {
 
     @GetMapping
     public ResponseEntity<?> get() {
-        try {
-            var result = clientManager.get();
+        var result = clientManager.get();
 
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable UUID id) {
-        try {
-            var result = clientManager.getById(id);
+    public ResponseEntity<?> getById(@PathVariable UUID id) throws NotFoundException {
+        var result = clientManager.getById(id);
 
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}/rents")
@@ -54,67 +49,48 @@ public class ClientController {
 
     @GetMapping("/login/many/{login}")
     public ResponseEntity<?> findClientsByLogin(@PathVariable String login) {
-        try {
-            var result = clientManager.findClientsByLogin(login);
+        var result = clientManager.findClientsByLogin(login);
 
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/login/single/{login}")
-    public ResponseEntity<?> getByLogin(@PathVariable String login) {
-        try {
-            var result = clientManager.getByLogin(login);
+    public ResponseEntity<?> getByLogin(@PathVariable String login) throws NotFoundException {
+        var result = clientManager.getByLogin(login);
 
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody ClientCreateRequest request) {
+    public ResponseEntity<?> create(@Valid @RequestBody ClientCreateRequest request) throws URISyntaxException {
         try {
             var result = clientManager.create(request.ToClient());
 
             return ResponseEntity.created(new URI("http://localhost:8080/realestate/" + result.getId())).body(result);
-        } catch (Exception e) {
+        } catch (LoginAlreadyTakenException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     @PutMapping
-    public ResponseEntity<?> update(@Valid @RequestBody ClientUpdateRequest request) {
-        try {
-            var result = clientManager.update(request.ToClient());
+    public ResponseEntity<?> update(@Valid @RequestBody ClientUpdateRequest request) throws NotFoundException {
+        var result = clientManager.update(request.ToClient());
 
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/activate/{id}")
-    public ResponseEntity<?> activate(@PathVariable UUID id) {
-        try {
-            clientManager.setActiveStatus(id, true);
+    public ResponseEntity<?> activate(@PathVariable UUID id) throws NotFoundException {
+        clientManager.setActiveStatus(id, true);
 
-            return ResponseEntity.ok("Activated");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        return ResponseEntity.ok("Activated");
     }
 
     @PostMapping("/deactivate/{id}")
-    public ResponseEntity<?> deactivate(@PathVariable UUID id) {
-        try {
-            clientManager.setActiveStatus(id, false);
+    public ResponseEntity<?> deactivate(@PathVariable UUID id) throws NotFoundException {
+        clientManager.setActiveStatus(id, false);
 
-            return ResponseEntity.ok("Deactivated");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        return ResponseEntity.ok("Deactivated");
+
     }
 }

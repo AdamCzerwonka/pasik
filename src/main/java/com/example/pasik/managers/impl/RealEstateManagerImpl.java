@@ -7,13 +7,13 @@ import com.example.pasik.model.RealEstate;
 import com.example.pasik.model.Rent;
 import com.example.pasik.repositories.RealEstateRepository;
 import com.example.pasik.repositories.RentRepository;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Component
+@Service
 public class RealEstateManagerImpl implements RealEstateManager {
     private final RealEstateRepository realEstateRepository;
     private final RentRepository rentRepository;

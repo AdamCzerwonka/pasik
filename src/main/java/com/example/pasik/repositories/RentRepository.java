@@ -19,5 +19,5 @@ public interface RentRepository {
 
     Rent update(Rent rent);
 
-    void delete(UUID id) throws Exception;
+    void delete(UUID id);
 }

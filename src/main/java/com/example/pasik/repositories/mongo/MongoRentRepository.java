@@ -10,14 +10,14 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import org.bson.conversions.Bson;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Component
+@Repository
 public class MongoRentRepository implements RentRepository {
     private final MongoCollection<MgdRent> collection;
 
@@ -98,14 +98,7 @@ public class MongoRentRepository implements RentRepository {
     }
 
     @Override
-    public void delete(UUID id) throws Exception {
-        Rent rent = getById(id).orElseThrow();
-
-        if (rent.getEndDate() != null) {
-            //TODO change exception
-            throw new Exception("Cannot delete this rent");
-        }
-
+    public void delete(UUID id) {
         Bson filter = Filters.eq(MgdRent.ID, id);
         collection.deleteOne(filter);
     }

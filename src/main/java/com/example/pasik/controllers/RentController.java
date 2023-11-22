@@ -1,5 +1,6 @@
 package com.example.pasik.controllers;
 
+import com.example.pasik.exceptions.*;
 import com.example.pasik.managers.RentManager;
 import com.example.pasik.model.Rent;
 import com.example.pasik.model.dto.Rent.RentCreateRequest;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,7 +24,7 @@ public class RentController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody @Valid RentCreateRequest rentRequest) throws Exception {
+    public ResponseEntity<?> create(@RequestBody @Valid RentCreateRequest rentRequest) throws NotFoundException, URISyntaxException {
         try {
             var result = rentManager.create(
                     rentRequest.getClientId(),
@@ -30,17 +32,17 @@ public class RentController {
                     rentRequest.getStartDate());
 
             return ResponseEntity.created(new URI("http://localhost:8080/rent/" + result.getId())).body(result);
-        } catch (Exception e) {
+        } catch (RealEstateRentedException | AccountInactiveException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     @PostMapping("/{id}/end")
-    public ResponseEntity<?> endRent(@PathVariable UUID id) throws Exception {
+    public ResponseEntity<?> endRent(@PathVariable UUID id) throws NotFoundException {
         try {
             rentManager.endRent(id);
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
+        } catch (RentEndedException | InvalidEndRentDateException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
@@ -51,23 +53,19 @@ public class RentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable UUID id) {
-        try {
-            Rent result = rentManager.getById(id);
+    public ResponseEntity<?> getById(@PathVariable UUID id) throws NotFoundException {
+        Rent result = rentManager.getById(id);
 
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable UUID id) throws Exception {
+    public ResponseEntity<?> delete(@PathVariable UUID id) {
         try {
             rentManager.delete(id);
 
             return ResponseEntity.ok("Deleted");
-        } catch (Exception e) {
+        } catch (RentEndedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

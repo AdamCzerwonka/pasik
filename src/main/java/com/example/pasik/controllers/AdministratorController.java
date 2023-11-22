@@ -1,5 +1,7 @@
 package com.example.pasik.controllers;
 
+import com.example.pasik.exceptions.LoginAlreadyTakenException;
+import com.example.pasik.exceptions.NotFoundException;
 import com.example.pasik.managers.AdministratorManager;
 import com.example.pasik.model.dto.Administrator.AdministratorCreateRequest;
 import com.example.pasik.model.dto.Administrator.AdministratorUpdateRequest;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
 @RestController()
@@ -22,88 +25,62 @@ public class AdministratorController {
 
     @GetMapping
     public ResponseEntity<?> get() {
-        try {
-            var result = administratorManager.get();
+        var result = administratorManager.get();
 
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        return ResponseEntity.ok(result);
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable UUID id) {
-        try {
-            var result = administratorManager.getById(id);
 
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable UUID id) throws NotFoundException {
+        var result = administratorManager.getById(id);
+
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/login/many/{login}")
     public ResponseEntity<?> findAdministratorsByLogin(@PathVariable String login) {
-        try {
-            var result = administratorManager.findAdministratorsByLogin(login);
+        var result = administratorManager.findAdministratorsByLogin(login);
 
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/login/single/{login}")
-    public ResponseEntity<?> getByLogin(@PathVariable String login) {
-        try {
-            var result = administratorManager.getByLogin(login);
+    public ResponseEntity<?> getByLogin(@PathVariable String login) throws NotFoundException {
+        var result = administratorManager.getByLogin(login);
 
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody AdministratorCreateRequest request) {
+    public ResponseEntity<?> create(@Valid @RequestBody AdministratorCreateRequest request) throws URISyntaxException {
         try {
             var result = administratorManager.create(request.ToAdministrator());
 
             return ResponseEntity.created(new URI("http://localhost:8080/realestate/" + result.getId())).body(result);
-        } catch (Exception e) {
+        } catch (LoginAlreadyTakenException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     @PutMapping
-    public ResponseEntity<?> update(@Valid @RequestBody AdministratorUpdateRequest request) {
-        try {
-            var result = administratorManager.update(request.ToAdministrator());
+    public ResponseEntity<?> update(@Valid @RequestBody AdministratorUpdateRequest request) throws NotFoundException {
+        var result = administratorManager.update(request.ToAdministrator());
 
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/activate/{id}")
-    public ResponseEntity<?> activate(@PathVariable UUID id) {
-        try {
-            administratorManager.setActiveStatus(id, true);
+    public ResponseEntity<?> activate(@PathVariable UUID id) throws NotFoundException {
+        administratorManager.setActiveStatus(id, true);
 
-            return ResponseEntity.ok("Activated");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        return ResponseEntity.ok("Activated");
     }
 
     @PostMapping("/deactivate/{id}")
-    public ResponseEntity<?> deactivate(@PathVariable UUID id) {
-        try {
-            administratorManager.setActiveStatus(id, false);
+    public ResponseEntity<?> deactivate(@PathVariable UUID id) throws NotFoundException {
+        administratorManager.setActiveStatus(id, false);
 
-            return ResponseEntity.ok("Deactivated");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        return ResponseEntity.ok("Deactivated");
+
     }
 }
