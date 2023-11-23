@@ -6,7 +6,6 @@ import com.example.pasik.managers.RentManager;
 import com.example.pasik.model.Client;
 import com.example.pasik.model.RealEstate;
 import com.example.pasik.model.Rent;
-import lombok.Getter;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
@@ -16,7 +15,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @Component
 @Profile("test")
