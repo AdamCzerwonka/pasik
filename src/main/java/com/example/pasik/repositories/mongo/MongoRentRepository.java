@@ -78,7 +78,6 @@ public class MongoRentRepository implements RentRepository {
 
     @Override
     public Rent create(Rent rent) {
-        // TODO add rent restrictions
         rent.setId(UUID.randomUUID());
         collection.insertOne(MgdRent.toMgdRent(rent));
 
