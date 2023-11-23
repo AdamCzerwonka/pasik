@@ -46,7 +46,7 @@ public class RealEstateController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("{id}/rents")
+    @GetMapping("/{id}/rents")
     public ResponseEntity<List<Rent>> getRents(@PathVariable UUID id, @RequestParam(defaultValue = "true") boolean current) {
         return ResponseEntity.ok(rentManager.getByRealEstateID(id, current));
     }

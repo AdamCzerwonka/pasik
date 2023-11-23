@@ -22,9 +22,11 @@ import java.util.regex.Pattern;
 public class MongoAdministratorRepository implements AdministratorRepository {
 
     private final MongoCollection<MgdAdministrator> collection;
+    private final MongoCollection documentCollection;
 
     public MongoAdministratorRepository(MongoDatabase database) {
-        this.collection = database.getCollection("administrators", MgdAdministrator.class);
+        this.collection = database.getCollection("users", MgdAdministrator.class);
+        this.documentCollection = database.getCollection("users");
     }
 
     @Override
@@ -84,9 +86,10 @@ public class MongoAdministratorRepository implements AdministratorRepository {
 
     @Override
     public Administrator create(Administrator administrator) throws LoginAlreadyTakenException {
-        Optional<Administrator> existing = getByLogin(administrator.getLogin());
+        Bson filter = Filters.eq(MgdAdministrator.LOGIN, administrator.getLogin());
+        Object existing = documentCollection.find(filter).first();
 
-        if (existing.isPresent()) {
+        if (existing != null) {
             throw new LoginAlreadyTakenException(administrator.getLogin());
         }
 

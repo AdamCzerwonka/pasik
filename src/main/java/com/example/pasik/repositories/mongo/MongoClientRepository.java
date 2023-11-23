@@ -21,9 +21,11 @@ import java.util.regex.Pattern;
 @Repository
 public class MongoClientRepository implements ClientRepository {
     private final MongoCollection<MgdClient> collection;
+    private final MongoCollection documentCollection;
 
     public MongoClientRepository(MongoDatabase database) {
         this.collection = database.getCollection("users", MgdClient.class);
+        this.documentCollection = database.getCollection("users");
     }
 
     @Override
@@ -83,9 +85,10 @@ public class MongoClientRepository implements ClientRepository {
 
     @Override
     public Client create(Client client) throws LoginAlreadyTakenException {
-        Optional<Client> existing = getByLogin(client.getLogin());
+        Bson filter = Filters.eq(MgdClient.LOGIN, client.getLogin());
+        Object existing = documentCollection.find(filter).first();
 
-        if (existing.isPresent()) {
+        if (existing != null) {
             throw new LoginAlreadyTakenException(client.getLogin());
         }
 
