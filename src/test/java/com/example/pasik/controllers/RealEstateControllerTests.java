@@ -292,4 +292,74 @@ public class RealEstateControllerTests {
                 .assertThat()
                 .statusCode(HttpStatus.BAD_REQUEST.value());
     }
+
+    @Test
+    public void testGetRentsShouldReturnCorrectAmountOfRents() {
+        String realEstateId = given()
+                .contentType(ContentType.JSON)
+                .body(realEstate1)
+                .when()
+                .post("/realestate")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .path("id");
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("id", realEstateId)
+                .pathParam("active", true)
+                .when()
+                .get("/realestate/{id}/rents?current={active}")
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("size()", is(0));
+
+        ClientCreateRequest clientCreteRequest = ClientCreateRequest
+                .builder()
+                .firstName("TestFirstName1")
+                .lastName("TestLastName1")
+                .login("testLogin1")
+                .active(true)
+                .build();
+
+        String clientId = given()
+                .contentType(ContentType.JSON)
+                .body(clientCreteRequest)
+                .when()
+                .post("/client")
+                .then()
+                .assertThat()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        RentCreateRequest rentCreateRequest = RentCreateRequest
+                .builder()
+                .realEstateId(UUID.fromString(realEstateId))
+                .clientId(UUID.fromString(clientId))
+                .startDate(LocalDate.now())
+                .build();
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(rentCreateRequest)
+                .when()
+                .post("/rent")
+                .then()
+                .assertThat()
+                .statusCode(201);
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("id", realEstateId)
+                .when()
+                .get("/realestate/{id}/rents")
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("size()", is(1));
+    }
 }
