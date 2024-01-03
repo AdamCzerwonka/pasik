@@ -4,6 +4,7 @@ import com.example.pasik.exceptions.LoginAlreadyTakenException;
 import com.example.pasik.exceptions.NotFoundException;
 import com.example.pasik.managers.ClientManager;
 import com.example.pasik.managers.RentManager;
+import com.example.pasik.model.Error;
 import com.example.pasik.model.Rent;
 import com.example.pasik.model.dto.Client.ClientCreateRequest;
 import com.example.pasik.model.dto.Client.ClientUpdateRequest;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController()
@@ -62,14 +65,10 @@ public class ClientController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody ClientCreateRequest request) throws URISyntaxException {
-        try {
-            var result = clientManager.create(request.ToClient());
+    public ResponseEntity<?> create(@Valid @RequestBody ClientCreateRequest request) throws URISyntaxException, LoginAlreadyTakenException {
+        var result = clientManager.create(request.ToClient());
 
-            return ResponseEntity.created(new URI("http://localhost:8080/realestate/" + result.getId())).body(result);
-        } catch (LoginAlreadyTakenException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        return ResponseEntity.created(new URI("http://localhost:8080/realestate/" + result.getId())).body(result);
     }
 
     @PutMapping
@@ -92,5 +91,13 @@ public class ClientController {
 
         return ResponseEntity.ok("Deactivated");
 
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(LoginAlreadyTakenException.class)
+    public Error handleLoginAlreadyTaken(LoginAlreadyTakenException ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("loginTaken", ex.getMessage());
+        return new Error(HttpStatus.BAD_REQUEST.value(), errors);
     }
 }
