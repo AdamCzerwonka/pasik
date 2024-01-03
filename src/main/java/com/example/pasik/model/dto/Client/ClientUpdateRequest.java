@@ -8,6 +8,7 @@ import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 public class ClientUpdateRequest extends UserUpdateRequest {
     @Builder
     public ClientUpdateRequest(UUID id, String firstName, String lastName, String login, Boolean active) {

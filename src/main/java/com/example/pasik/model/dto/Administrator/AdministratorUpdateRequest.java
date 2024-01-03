@@ -5,11 +5,13 @@ import com.example.pasik.model.dto.User.UserUpdateRequest;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 public class AdministratorUpdateRequest extends UserUpdateRequest {
     @Builder
     public AdministratorUpdateRequest(UUID id, String firstName, String lastName, String login, Boolean active) {

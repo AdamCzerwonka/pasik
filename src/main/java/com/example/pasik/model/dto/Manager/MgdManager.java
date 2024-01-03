@@ -13,16 +13,17 @@ import java.util.UUID;
 public class MgdManager extends MgdUser {
     @BsonCreator
     public MgdManager(@BsonId UUID id,
-                     @BsonProperty(FIRST_NAME) String firstName,
-                     @BsonProperty(LAST_NAME) String lastName,
-                     @BsonProperty(LOGIN) String login,
-                     @BsonProperty(ACTIVE) Boolean active) {
-        super(id, firstName, lastName, login, active);
+                      @BsonProperty(FIRST_NAME) String firstName,
+                      @BsonProperty(LAST_NAME) String lastName,
+                      @BsonProperty(LOGIN) String login,
+                      @BsonProperty(ACTIVE) Boolean active,
+                      @BsonProperty("role") String role) {
+        super(id, firstName, lastName, login, active, role);
     }
 
     public static MgdManager toMgdManager(Manager manager) {
         return new MgdManager(
-                manager.getId(), manager.getFirstName(), manager.getLastName(), manager.getLogin(), manager.getActive());
+                manager.getId(), manager.getFirstName(), manager.getLastName(), manager.getLogin(), manager.getActive(), manager.getRole());
     }
 
     public Manager toManager() {

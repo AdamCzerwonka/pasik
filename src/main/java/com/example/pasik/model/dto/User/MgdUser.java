@@ -1,5 +1,6 @@
 package com.example.pasik.model.dto.User;
 
+import com.example.pasik.model.User;
 import lombok.Data;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
@@ -7,21 +8,25 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.util.UUID;
+
 @Data
 @BsonDiscriminator(key = "_clazz", value = "user")
-public abstract class MgdUser {
+public class MgdUser {
     @BsonCreator
     public MgdUser(@BsonId UUID id,
                    @BsonProperty("firstName") String firstName,
                    @BsonProperty("lastName") String lastName,
                    @BsonProperty("login") String login,
-                   @BsonProperty("active") Boolean active) {
+                   @BsonProperty("active") Boolean active,
+                   @BsonProperty("role") String role) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.login = login;
         this.active = active;
+        this.role = role;
     }
+
     @BsonId
     private UUID id;
     @BsonProperty("firstName")
@@ -32,6 +37,10 @@ public abstract class MgdUser {
     private String login;
     @BsonProperty("active")
     private Boolean active;
+    @BsonProperty("role")
+    private String role;
 
-
+    public static User MgdUserToUser(MgdUser user) {
+        return new User(user.getId(), user.getFirstName(), user.getLastName(), user.getLogin(), user.getActive(), user.getRole());
+    }
 }

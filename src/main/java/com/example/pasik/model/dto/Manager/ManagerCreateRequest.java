@@ -6,8 +6,10 @@ import com.example.pasik.model.dto.User.UserCreateRequest;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class ManagerCreateRequest extends UserCreateRequest {
     @Builder

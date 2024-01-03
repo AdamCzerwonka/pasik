@@ -16,13 +16,14 @@ public class MgdClient extends MgdUser {
                      @BsonProperty(FIRST_NAME) String firstName,
                      @BsonProperty(LAST_NAME) String lastName,
                      @BsonProperty(LOGIN) String login,
-                     @BsonProperty(ACTIVE) Boolean active) {
-        super(id, firstName, lastName, login, active);
+                     @BsonProperty(ACTIVE) Boolean active,
+                     @BsonProperty("role") String role) {
+        super(id, firstName, lastName, login, active, role);
     }
 
     public static MgdClient toMgdClient(Client client) {
         return new MgdClient(
-                client.getId(), client.getFirstName(), client.getLastName(), client.getLogin(), client.getActive());
+                client.getId(), client.getFirstName(), client.getLastName(), client.getLogin(), client.getActive(), client.getRole());
     }
 
     public Client toClient() {

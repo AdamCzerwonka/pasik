@@ -82,14 +82,14 @@ public class ClientController {
     public ResponseEntity<?> activate(@PathVariable UUID id) throws NotFoundException {
         clientManager.setActiveStatus(id, true);
 
-        return ResponseEntity.ok("Activated");
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/deactivate/{id}")
     public ResponseEntity<?> deactivate(@PathVariable UUID id) throws NotFoundException {
         clientManager.setActiveStatus(id, false);
 
-        return ResponseEntity.ok("Deactivated");
+        return ResponseEntity.ok().build();
 
     }
 

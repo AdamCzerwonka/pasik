@@ -6,6 +6,7 @@ import lombok.*;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 public class ClientCreateRequest extends UserCreateRequest {
     @Builder
     public ClientCreateRequest(String firstName, String lastName, String login, Boolean active) {

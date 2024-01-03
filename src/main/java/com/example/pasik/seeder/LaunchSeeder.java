@@ -36,19 +36,29 @@ public class LaunchSeeder implements CommandLineRunner {
     private void loadUserData() {
         Logger logger = LoggerFactory.getLogger(MongoClientConfiguration.class);
         try {
-            Client client1 = new Client(null, "Carl", "Johnson", "CJ", true);
-            client1 = clientManager.create(client1);
+            Client client = new Client(null, "Bob", "Tyson", "booooob", true);
+            clientManager.create(client);
+            client = new Client(null, "John", "Wick", "JW", true);
+            clientManager.create(client);
+            client = new Client(null, "Lara", "Croft", "LC", true);
+            clientManager.create(client);
+            client = new Client(null, "Carl", "Johnson", "CJ", true);
+            clientManager.create(client);
             Client client2 = new Client(null, "Neo", "Matrix", "neooo", true);
             client2 = clientManager.create(client2);
             Client inactiveClient = new Client(null, "Fiona", "Green", "shrek", false);
             inactiveClient = clientManager.create(inactiveClient);
 
-            RealEstate realEstate1 = new RealEstate(null,"House", "Grove Street", 21, 15);
-            realEstate1 = realEstateManager.create(realEstate1);
+            RealEstate realEstate = new RealEstate(null,"Big House", "Twinkle Street", 21, 15);
+            realEstateManager.create(realEstate);
+            realEstate = new RealEstate(null,"Small House", "Test123", 21, 15);
+            realEstateManager.create(realEstate);
+            realEstate = new RealEstate(null,"House", "Grove Street", 21, 15);
+            realEstateManager.create(realEstate);
             RealEstate realEstate2 = new RealEstate(null,"Villa", "JumpStreet 21", 1500, 1000);
             realEstate2 = realEstateManager.create(realEstate2);
 
-            Rent rent = rentManager.create(client1.getId(), realEstate1.getId(), LocalDate.now());
+            Rent rent = rentManager.create(client2.getId(), realEstate2.getId(), LocalDate.now());
             logger.info("Data successfully initialized!");
         } catch (Exception e) {
             logger.error("Data initialization problem occurred!");
