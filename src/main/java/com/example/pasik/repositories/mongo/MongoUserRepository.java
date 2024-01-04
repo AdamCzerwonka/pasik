@@ -5,10 +5,14 @@ import com.example.pasik.model.dto.User.MgdUser;
 import com.example.pasik.repositories.UserRepository;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import org.bson.conversions.Bson;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class MongoUserRepository implements UserRepository {
@@ -19,7 +23,20 @@ public class MongoUserRepository implements UserRepository {
     }
 
     @Override
-    public List<User> getAll() {
-        return collection.find().into(new ArrayList<>()).stream().map(MgdUser::MgdUserToUser).toList();
+    public List<User> getAll(String filter) {
+        List<MgdUser> mongoUsers;
+        if (filter != null) {
+            Bson bson = Filters.regex("login", filter);
+            mongoUsers = collection.find(bson).into(new ArrayList<>());
+        } else {
+            mongoUsers = collection.find().into(new ArrayList<>());
+        }
+        return mongoUsers.stream().map(MgdUser::MgdUserToUser).toList();
+    }
+
+    @Override
+    public User getById(UUID id) {
+        Bson filter = Filters.eq("_id", id);
+        return MgdUser.MgdUserToUser(collection.find(filter).first());
     }
 }

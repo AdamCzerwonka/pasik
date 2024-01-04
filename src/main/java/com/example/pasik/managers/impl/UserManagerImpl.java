@@ -6,6 +6,7 @@ import com.example.pasik.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserManagerImpl implements UserManager {
@@ -16,7 +17,12 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public List<User> getAll() {
-        return userRepository.getAll();
+    public List<User> getAll(String filter) {
+        return userRepository.getAll(filter);
+    }
+
+    @Override
+    public User getById(UUID id) {
+        return userRepository.getById(id);
     }
 }

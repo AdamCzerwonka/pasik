@@ -37,10 +37,7 @@ public class MongoRentRepository implements RentRepository {
 
     @Override
     public List<Rent> getByClientId(UUID clientId, boolean current) {
-        Bson filters = Filters.and(
-                Filters.eq(MgdRent.CLIENT + "." + MgdClient.ID, clientId),
-                Filters.exists(MgdRent.END_DATE, !current)
-        );
+        Bson filters =  Filters.eq(MgdRent.CLIENT + "." + MgdClient.ID, clientId);
 
         return collection
                 .find(filters)
