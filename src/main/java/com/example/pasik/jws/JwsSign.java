@@ -39,21 +39,21 @@ public class JwsSign {
         return null;
     }
 
-    public boolean verify(String json) {
-        try {
-            JWSObjectJSON jwsObjectJSON = JWSObjectJSON.parse(json);
-            JWSObjectJSON.Signature signature = jwsObjectJSON.getSignatures().getFirst();
-
-            if (publicKey.getKeyID().equals(signature.getHeader().getKeyID())) {
-                if (!signature.verify(new RSASSAVerifier(publicKey))) {
-                    return false;
-                }
-            }
-
-            return JWSObjectJSON.State.VERIFIED.equals(jwsObjectJSON.getState());
-        } catch (Exception e) {
-        }
-
-        return false;
-    }
+//    public boolean verify(String json) {
+//        try {
+//            JWSObjectJSON jwsObjectJSON = JWSObjectJSON.parse(json);
+//            JWSObjectJSON.Signature signature = jwsObjectJSON.getSignatures().getFirst();
+//
+//            if (publicKey.getKeyID().equals(signature.getHeader().getKeyID())) {
+//                if (!signature.verify(new RSASSAVerifier(publicKey))) {
+//                    return false;
+//                }
+//            }
+//
+//            return JWSObjectJSON.State.VERIFIED.equals(jwsObjectJSON.getState());
+//        } catch (Exception e) {
+//        }
+//
+//        return false;
+//    }
 }
