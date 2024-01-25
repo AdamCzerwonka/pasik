@@ -5,13 +5,16 @@ import com.example.pasik.model.dto.User.MgdUser;
 import com.example.pasik.repositories.UserRepository;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Field;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import org.bson.conversions.Bson;
 import org.springframework.stereotype.Repository;
 
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -48,5 +51,18 @@ public class MongoUserRepository implements UserRepository {
             return null;
         }
         return MgdUser.MgdUserToUser(user);
+    }
+
+    @Override
+    public User updatePassword(String login, String password) {
+        Bson filters = Filters.and(
+                Filters.eq("login", login)
+        );
+        Bson updates = Updates.combine(
+                Updates.set("password", password)
+        );
+        collection.updateOne(filters, updates);
+
+        return getByLogin(login);
     }
 }

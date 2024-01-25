@@ -11,4 +11,6 @@ public interface UserRepository {
     User getById(UUID id);
 
     User getByLogin(String login);
+
+    User updatePassword(String login, String password);
 }
