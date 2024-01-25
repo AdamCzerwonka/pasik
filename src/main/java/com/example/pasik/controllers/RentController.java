@@ -9,6 +9,8 @@ import com.example.pasik.model.Rent;
 import com.example.pasik.model.User;
 import com.example.pasik.model.dto.Rent.RentCreateRequest;
 import com.example.pasik.model.dto.Rent.RentForUserCreateRequest;
+import com.example.pasik.model.dto.Rent.RentResponse;
+import com.example.pasik.model.dto.User.UserResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,18 +39,18 @@ public class RentController {
     }
 
     @PostMapping
-    public ResponseEntity<Rent> create(@RequestBody @Valid RentCreateRequest rentRequest) throws NotFoundException
+    public ResponseEntity<RentResponse> create(@RequestBody @Valid RentCreateRequest rentRequest) throws NotFoundException
             , URISyntaxException, RealEstateRentedException, AccountInactiveException {
         var result = rentManager.create(
                 rentRequest.getClientId(),
                 rentRequest.getRealEstateId(),
                 rentRequest.getStartDate());
 
-        return ResponseEntity.created(new URI("http://localhost:8080/rent/" + result.getId())).body(result);
+        return ResponseEntity.created(new URI("https://localhost/rent/" + result.getId())).body(RentResponse.fromRent(result));
     }
 
     @PostMapping("/me")
-    public ResponseEntity<Rent> create(@RequestHeader("Authorization") String complexToken, @RequestBody @Valid RentForUserCreateRequest rentForUserRequest) throws NotFoundException
+    public ResponseEntity<RentResponse> create(@RequestHeader("Authorization") String complexToken, @RequestBody @Valid RentForUserCreateRequest rentForUserRequest) throws NotFoundException
             , URISyntaxException, RealEstateRentedException, AccountInactiveException {
         User user = getUserFromComplexToken(complexToken);
         var result = rentManager.create(
@@ -56,7 +58,7 @@ public class RentController {
                 rentForUserRequest.getRealEstateId(),
                 rentForUserRequest.getStartDate());
 
-        return ResponseEntity.created(new URI("http://localhost:8080/rent/" + result.getId())).body(result);
+        return ResponseEntity.created(new URI("https://localhost/rent/" + result.getId())).body(RentResponse.fromRent(result));
     }
 
     @PostMapping("/{id}/end")
@@ -66,15 +68,15 @@ public class RentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Rent>> get() {
-        return ResponseEntity.ok(rentManager.get());
+    public ResponseEntity<List<RentResponse>> get() {
+        return ResponseEntity.ok(rentManager.get().stream().map(RentResponse::fromRent).toList());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable UUID id) throws NotFoundException {
         Rent result = rentManager.getById(id);
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(RentResponse.fromRent(result));
     }
 
     @DeleteMapping("/{id}")

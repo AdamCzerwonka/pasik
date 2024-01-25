@@ -9,6 +9,7 @@ import com.example.pasik.model.Error;
 import com.example.pasik.model.Rent;
 import com.example.pasik.model.dto.Client.ClientCreateRequest;
 import com.example.pasik.model.dto.Client.ClientUpdateRequest;
+import com.example.pasik.model.dto.Rent.RentResponse;
 import com.example.pasik.model.dto.User.UserResponse;
 import com.nimbusds.jose.JOSEException;
 import jakarta.annotation.security.RolesAllowed;
@@ -55,8 +56,8 @@ public class ClientController {
     }
 
     @GetMapping("/{id}/rents")
-    public ResponseEntity<List<Rent>> getRents(@PathVariable UUID id, @RequestParam(defaultValue = "true") boolean current) {
-        return ResponseEntity.ok(rentManager.getByClientId(id, current));
+    public ResponseEntity<List<RentResponse>> getRents(@PathVariable UUID id, @RequestParam(defaultValue = "true") boolean current) {
+        return ResponseEntity.ok(rentManager.getByClientId(id, current).stream().map(RentResponse::fromRent).toList());
     }
 
     @GetMapping("/login/many/{login}")
