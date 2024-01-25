@@ -17,13 +17,14 @@ public class MgdClient extends MgdUser {
                      @BsonProperty(LAST_NAME) String lastName,
                      @BsonProperty(LOGIN) String login,
                      @BsonProperty(ACTIVE) Boolean active,
-                     @BsonProperty("role") String role) {
-        super(id, firstName, lastName, login, active, role);
+                     @BsonProperty("role") String role,
+    @BsonProperty(PASSWORD) String password) {
+        super(id, firstName, lastName, login, active, role, password);
     }
 
     public static MgdClient toMgdClient(Client client) {
         return new MgdClient(
-                client.getId(), client.getFirstName(), client.getLastName(), client.getLogin(), client.getActive(), client.getRole());
+                client.getId(), client.getFirstName(), client.getLastName(), client.getLogin(), client.getActive(), client.getRole(), client.getPassword());
     }
 
     public Client toClient() {
@@ -32,7 +33,8 @@ public class MgdClient extends MgdUser {
                 getFirstName(),
                 getLastName(),
                 getLogin(),
-                getActive()
+                getActive(),
+                getPassword()
         );
     }
 
@@ -41,4 +43,5 @@ public class MgdClient extends MgdUser {
     public final static String LAST_NAME = "lastName";
     public final static String LOGIN = "login";
     public final static String ACTIVE = "active";
+    public final static String PASSWORD = "password";
 }

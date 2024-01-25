@@ -17,13 +17,14 @@ public class MgdAdministrator extends MgdUser {
                             @BsonProperty(LAST_NAME) String lastName,
                             @BsonProperty(LOGIN) String login,
                             @BsonProperty(ACTIVE) Boolean active,
-                            @BsonProperty("role") String role) {
-        super(id, firstName, lastName, login, active, role);
+                            @BsonProperty("role") String role,
+                            @BsonProperty(PASSWORD) String password){
+        super(id, firstName, lastName, login, active, role, password);
     }
 
     public static MgdAdministrator toMgdAdministrator(Administrator administrator) {
         return new MgdAdministrator(
-                administrator.getId(), administrator.getFirstName(), administrator.getLastName(), administrator.getLogin(), administrator.getActive(), administrator.getRole());
+                administrator.getId(), administrator.getFirstName(), administrator.getLastName(), administrator.getLogin(), administrator.getActive(), administrator.getRole(), administrator.getPassword());
     }
 
     public Administrator toAdministrator() {
@@ -32,7 +33,8 @@ public class MgdAdministrator extends MgdUser {
                 getFirstName(),
                 getLastName(),
                 getLogin(),
-                getActive()
+                getActive(),
+                getPassword()
         );
     }
 
@@ -41,5 +43,6 @@ public class MgdAdministrator extends MgdUser {
     public final static String LAST_NAME = "lastName";
     public final static String LOGIN = "login";
     public final static String ACTIVE = "active";
+    public final static String PASSWORD = "password";
 }
 

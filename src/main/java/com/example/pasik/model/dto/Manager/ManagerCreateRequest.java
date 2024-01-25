@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 public class ManagerCreateRequest extends UserCreateRequest {
     @Builder
-    public ManagerCreateRequest(String firstName, String lastName, String login, Boolean active) {
-        super(firstName, lastName, login, active);
+    public ManagerCreateRequest(String firstName, String lastName, String login, Boolean active, String password) {
+        super(firstName, lastName, login, active, password);
     }
 
     public Manager ToManager() {
-        return new Manager(null, getFirstName(), getLastName(), getLogin(), getActive());
+        return new Manager(null, getFirstName(), getLastName(), getLogin(), getActive(), getPassword());
     }
 }

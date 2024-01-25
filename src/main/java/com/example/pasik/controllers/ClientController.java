@@ -8,6 +8,7 @@ import com.example.pasik.model.Error;
 import com.example.pasik.model.Rent;
 import com.example.pasik.model.dto.Client.ClientCreateRequest;
 import com.example.pasik.model.dto.Client.ClientUpdateRequest;
+import com.example.pasik.model.dto.User.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ public class ClientController {
 
     @GetMapping
     public ResponseEntity<?> get() {
-        var result = clientManager.get();
+        var result = clientManager.get().stream().map(UserResponse::fromUser).toList();
 
         return ResponseEntity.ok(result);
     }
@@ -42,7 +43,7 @@ public class ClientController {
     public ResponseEntity<?> getById(@PathVariable UUID id) throws NotFoundException {
         var result = clientManager.getById(id);
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(UserResponse.fromUser(result));
     }
 
     @GetMapping("/{id}/rents")
@@ -52,7 +53,7 @@ public class ClientController {
 
     @GetMapping("/login/many/{login}")
     public ResponseEntity<?> findClientsByLogin(@PathVariable String login) {
-        var result = clientManager.findClientsByLogin(login);
+        var result = clientManager.findClientsByLogin(login).stream().map(UserResponse::fromUser).toList();
 
         return ResponseEntity.ok(result);
     }
@@ -61,21 +62,21 @@ public class ClientController {
     public ResponseEntity<?> getByLogin(@PathVariable String login) throws NotFoundException {
         var result = clientManager.getByLogin(login);
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(UserResponse.fromUser(result));
     }
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody ClientCreateRequest request) throws URISyntaxException, LoginAlreadyTakenException {
         var result = clientManager.create(request.ToClient());
 
-        return ResponseEntity.created(new URI("http://localhost:8080/realestate/" + result.getId())).body(result);
+        return ResponseEntity.created(new URI("http://localhost:8080/realestate/" + result.getId())).body(UserResponse.fromUser(result));
     }
 
     @PutMapping
     public ResponseEntity<?> update(@Valid @RequestBody ClientUpdateRequest request) throws NotFoundException {
         var result = clientManager.update(request.ToClient());
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(UserResponse.fromUser(result));
     }
 
     @PostMapping("/activate/{id}")

@@ -18,13 +18,15 @@ public class MgdUser {
                    @BsonProperty("lastName") String lastName,
                    @BsonProperty("login") String login,
                    @BsonProperty("active") Boolean active,
-                   @BsonProperty("role") String role) {
+                   @BsonProperty("role") String role,
+                   @BsonProperty("password") String password) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.login = login;
         this.active = active;
         this.role = role;
+        this.password = password;
     }
 
     @BsonId
@@ -39,8 +41,10 @@ public class MgdUser {
     private Boolean active;
     @BsonProperty("role")
     private String role;
+    @BsonProperty("password")
+    private String password;
 
     public static User MgdUserToUser(MgdUser user) {
-        return new User(user.getId(), user.getFirstName(), user.getLastName(), user.getLogin(), user.getActive(), user.getRole());
+        return new User(user.getId(), user.getFirstName(), user.getLastName(), user.getLogin(), user.getActive(), user.getRole(), user.getPassword());
     }
 }

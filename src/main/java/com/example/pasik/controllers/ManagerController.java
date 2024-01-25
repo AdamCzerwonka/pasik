@@ -6,6 +6,7 @@ import com.example.pasik.managers.ManagerManager;
 import com.example.pasik.model.dto.Client.ClientCreateRequest;
 import com.example.pasik.model.dto.Manager.ManagerCreateRequest;
 import com.example.pasik.model.dto.Manager.ManagerUpdateRequest;
+import com.example.pasik.model.dto.User.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class ManagerController {
 
     @GetMapping
     public ResponseEntity<?> get() {
-        var result = managerManager.get();
+        var result = managerManager.get().stream().map(UserResponse::fromUser).toList();
 
         return ResponseEntity.ok(result);
     }
@@ -35,12 +36,12 @@ public class ManagerController {
     public ResponseEntity<?> getById(@PathVariable UUID id) throws NotFoundException {
         var result = managerManager.getById(id);
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(UserResponse.fromUser(result));
     }
 
     @GetMapping("/login/many/{login}")
     public ResponseEntity<?> findClientsByLogin(@PathVariable String login) {
-        var result = managerManager.findManagersByLogin(login);
+        var result = managerManager.findManagersByLogin(login).stream().map(UserResponse::fromUser).toList();
 
         return ResponseEntity.ok(result);
     }
@@ -49,7 +50,7 @@ public class ManagerController {
     public ResponseEntity<?> getByLogin(@PathVariable String login) throws NotFoundException {
         var result = managerManager.getByLogin(login);
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(UserResponse.fromUser(result));
     }
 
     @PostMapping
@@ -57,7 +58,7 @@ public class ManagerController {
         try {
             var result = managerManager.create(request.ToManager());
 
-            return ResponseEntity.created(new URI("http://localhost:8080/realestate/" + result.getId())).body(result);
+            return ResponseEntity.created(new URI("http://localhost:8080/realestate/" + result.getId())).body(UserResponse.fromUser(result));
         } catch (LoginAlreadyTakenException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -67,7 +68,7 @@ public class ManagerController {
     public ResponseEntity<?> update(@Valid @RequestBody ManagerUpdateRequest request) throws NotFoundException {
         var result = managerManager.update(request.ToManager());
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(UserResponse.fromUser(result));
     }
 
     @PostMapping("/activate/{id}")

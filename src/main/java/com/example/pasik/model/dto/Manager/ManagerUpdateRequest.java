@@ -13,11 +13,11 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ManagerUpdateRequest extends UserUpdateRequest {
     @Builder
-    public ManagerUpdateRequest(UUID id, String firstName, String lastName, String login, Boolean active) {
-        super(id, firstName, lastName, login, active);
+    public ManagerUpdateRequest(UUID id, String firstName, String lastName, String login, Boolean active, String password) {
+        super(id, firstName, lastName, login, active, password);
     }
 
     public Manager ToManager() {
-        return new Manager(getId(), getFirstName(), getLastName(), getLogin(), getActive());
+        return new Manager(getId(), getFirstName(), getLastName(), getLogin(), getActive(), getPassword());
     }
 }

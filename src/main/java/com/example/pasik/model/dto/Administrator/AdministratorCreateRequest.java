@@ -14,11 +14,11 @@ import java.util.UUID;
 @NoArgsConstructor
 public class AdministratorCreateRequest extends UserCreateRequest {
     @Builder
-    public AdministratorCreateRequest(String firstName, String lastName, String login, Boolean active) {
-        super(firstName, lastName, login, active);
+    public AdministratorCreateRequest(String firstName, String lastName, String login, Boolean active, String password) {
+        super(firstName, lastName, login, active, password);
     }
 
     public Administrator ToAdministrator() {
-        return new Administrator(null, getFirstName(), getLastName(), getLogin(), getActive());
+        return new Administrator(null, getFirstName(), getLastName(), getLogin(), getActive(), getPassword());
     }
 }

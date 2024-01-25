@@ -5,6 +5,7 @@ import com.example.pasik.exceptions.NotFoundException;
 import com.example.pasik.managers.AdministratorManager;
 import com.example.pasik.model.dto.Administrator.AdministratorCreateRequest;
 import com.example.pasik.model.dto.Administrator.AdministratorUpdateRequest;
+import com.example.pasik.model.dto.User.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class AdministratorController {
 
     @GetMapping
     public ResponseEntity<?> get() {
-        var result = administratorManager.get();
+        var result = administratorManager.get().stream().map(UserResponse::fromUser).toList();
 
         return ResponseEntity.ok(result);
     }
@@ -34,12 +35,12 @@ public class AdministratorController {
     public ResponseEntity<?> getById(@PathVariable UUID id) throws NotFoundException {
         var result = administratorManager.getById(id);
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(UserResponse.fromUser(result));
     }
 
     @GetMapping("/login/many/{login}")
     public ResponseEntity<?> findAdministratorsByLogin(@PathVariable String login) {
-        var result = administratorManager.findAdministratorsByLogin(login);
+        var result = administratorManager.findAdministratorsByLogin(login).stream().map(UserResponse::fromUser).toList();
 
         return ResponseEntity.ok(result);
     }
@@ -48,7 +49,7 @@ public class AdministratorController {
     public ResponseEntity<?> getByLogin(@PathVariable String login) throws NotFoundException {
         var result = administratorManager.getByLogin(login);
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(UserResponse.fromUser(result));
     }
 
     @PostMapping
@@ -56,7 +57,7 @@ public class AdministratorController {
         try {
             var result = administratorManager.create(request.ToAdministrator());
 
-            return ResponseEntity.created(new URI("http://localhost:8080/realestate/" + result.getId())).body(result);
+            return ResponseEntity.created(new URI("http://localhost:8080/realestate/" + result.getId())).body(UserResponse.fromUser(result));
         } catch (LoginAlreadyTakenException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -66,7 +67,7 @@ public class AdministratorController {
     public ResponseEntity<?> update(@Valid @RequestBody AdministratorUpdateRequest request) throws NotFoundException {
         var result = administratorManager.update(request.ToAdministrator());
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(UserResponse.fromUser(result));
     }
 
     @PostMapping("/activate/{id}")

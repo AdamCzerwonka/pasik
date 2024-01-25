@@ -36,17 +36,17 @@ public class LaunchSeeder implements CommandLineRunner {
     private void loadUserData() {
         Logger logger = LoggerFactory.getLogger(MongoClientConfiguration.class);
         try {
-            Client client = new Client(null, "Bob", "Tyson", "booooob", true);
+            Client client = new Client(null, "Bob", "Tyson", "booooob", true, "test123");
             clientManager.create(client);
-            client = new Client(null, "John", "Wick", "JW", true);
+            client = new Client(null, "John", "Wick", "JW", true, "test123");
             clientManager.create(client);
-            client = new Client(null, "Lara", "Croft", "LC", true);
+            client = new Client(null, "Lara", "Croft", "LC", true, "test123");
             clientManager.create(client);
-            client = new Client(null, "Carl", "Johnson", "CJ", true);
+            client = new Client(null, "Carl", "Johnson", "CJ", true, "test123");
             clientManager.create(client);
-            Client client2 = new Client(null, "Neo", "Matrix", "neooo", true);
+            Client client2 = new Client(null, "Neo", "Matrix", "neooo", true, "test123");
             client2 = clientManager.create(client2);
-            Client inactiveClient = new Client(null, "Fiona", "Green", "shrek", false);
+            Client inactiveClient = new Client(null, "Fiona", "Green", "shrek", false, "test123");
             inactiveClient = clientManager.create(inactiveClient);
 
             RealEstate realEstate = new RealEstate(null,"Big House", "Twinkle Street", 21, 15);

@@ -5,6 +5,8 @@ import com.example.pasik.exceptions.NotFoundException;
 import com.example.pasik.managers.ManagerManager;
 import com.example.pasik.model.Manager;
 import com.example.pasik.repositories.ManagerRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,10 +14,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class ManagerManagerImpl implements ManagerManager {
     private final ManagerRepository managerRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public ManagerManagerImpl(final ManagerRepository managerRepository) {this.managerRepository = managerRepository;}
 
     @Override
     public List<Manager> get() {
@@ -51,6 +54,7 @@ public class ManagerManagerImpl implements ManagerManager {
 
     @Override
     public Manager create(Manager manager) throws LoginAlreadyTakenException {
+        manager.setPassword(passwordEncoder.encode(manager.getPassword()));
         return managerRepository.create(manager);
     }
 

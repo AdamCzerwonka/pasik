@@ -9,11 +9,11 @@ import lombok.*;
 @NoArgsConstructor
 public class ClientCreateRequest extends UserCreateRequest {
     @Builder
-    public ClientCreateRequest(String firstName, String lastName, String login, Boolean active) {
-        super(firstName, lastName, login, active);
+    public ClientCreateRequest(String firstName, String lastName, String login, Boolean active, String password) {
+        super(firstName, lastName, login, active, password);
     }
 
     public Client ToClient() {
-        return new Client(null, getFirstName(), getLastName(), getLogin(), getActive());
+        return new Client(null, getFirstName(), getLastName(), getLogin(), getActive(), getPassword());
     }
 }

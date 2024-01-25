@@ -5,6 +5,8 @@ import com.example.pasik.exceptions.NotFoundException;
 import com.example.pasik.managers.ClientManager;
 import com.example.pasik.model.Client;
 import com.example.pasik.repositories.ClientRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,12 +14,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class ClientManagerImpl implements ClientManager {
     private final ClientRepository clientRepository;
-
-    public ClientManagerImpl(final ClientRepository clientRepository) {
-        this.clientRepository = clientRepository;
-    }
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<Client> get() {
@@ -48,11 +48,12 @@ public class ClientManagerImpl implements ClientManager {
             throw new NotFoundException("Client with given id does not exists");
         }
 
-        return  client.get();
+        return client.get();
     }
 
     @Override
     public Client create(Client client) throws LoginAlreadyTakenException {
+        client.setPassword(passwordEncoder.encode(client.getPassword()));
         return clientRepository.create(client);
     }
 

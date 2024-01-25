@@ -40,11 +40,11 @@ public class TestDataSeeder {
         clients.clear();
 
         return args -> {
-            Client testClient = new Client(null, "firstName", "lastName", "login", true);
+            Client testClient = new Client(null, "firstName", "lastName", "login", true, "test123");
             testClient = clientManager.create(testClient);
-            Client testClient2 = new Client(null, "firstName2", "lastName2", "login2", true);
+            Client testClient2 = new Client(null, "firstName2", "lastName2", "login2", true, "test123");
             testClient2 = clientManager.create(testClient2);
-            Client inactiveClient = new Client(null, "firstNameInactive", "lastNameInactive", "loginInactive", false);
+            Client inactiveClient = new Client(null, "firstNameInactive", "lastNameInactive", "loginInactive", false, "test123");
             inactiveClient = clientManager.create(inactiveClient);
 
             clients.add(testClient);

@@ -14,11 +14,11 @@ import java.util.UUID;
 @NoArgsConstructor
 public class AdministratorUpdateRequest extends UserUpdateRequest {
     @Builder
-    public AdministratorUpdateRequest(UUID id, String firstName, String lastName, String login, Boolean active) {
-        super(id, firstName, lastName, login, active);
+    public AdministratorUpdateRequest(UUID id, String firstName, String lastName, String login, Boolean active, String password) {
+        super(id, firstName, lastName, login, active, password);
     }
 
     public Administrator ToAdministrator() {
-        return new Administrator(getId(), getFirstName(), getLastName(), getLogin(), getActive());
+        return new Administrator(getId(), getFirstName(), getLastName(), getLogin(), getActive(), getPassword());
     }
 }

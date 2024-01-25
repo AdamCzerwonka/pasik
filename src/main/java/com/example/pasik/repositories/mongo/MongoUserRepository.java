@@ -39,4 +39,14 @@ public class MongoUserRepository implements UserRepository {
         Bson filter = Filters.eq("_id", id);
         return MgdUser.MgdUserToUser(collection.find(filter).first());
     }
+
+    @Override
+    public User getByLogin(String login) {
+        Bson filter = Filters.eq("login", login);
+        MgdUser user = collection.find(filter).first();
+        if (user == null) {
+            return null;
+        }
+        return MgdUser.MgdUserToUser(user);
+    }
 }

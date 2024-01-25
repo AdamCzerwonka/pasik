@@ -5,6 +5,8 @@ import com.example.pasik.exceptions.NotFoundException;
 import com.example.pasik.managers.AdministratorManager;
 import com.example.pasik.model.Administrator;
 import com.example.pasik.repositories.AdministratorRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,12 +14,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class AdministratorManagerImpl implements AdministratorManager {
     private final AdministratorRepository administratorRepository;
-
-    public AdministratorManagerImpl(final AdministratorRepository administratorRepository) {
-        this.administratorRepository = administratorRepository;
-    }
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<Administrator> get() {
@@ -53,6 +53,7 @@ public class AdministratorManagerImpl implements AdministratorManager {
 
     @Override
     public Administrator create(Administrator administrator) throws LoginAlreadyTakenException {
+        administrator.setPassword(passwordEncoder.encode(administrator.getPassword()));
         return administratorRepository.create(administrator);
     }
 
