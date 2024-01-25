@@ -7,6 +7,7 @@ import com.example.pasik.managers.AdministratorManager;
 import com.example.pasik.model.dto.Administrator.AdministratorCreateRequest;
 import com.example.pasik.model.dto.Administrator.AdministratorUpdateRequest;
 import com.example.pasik.model.dto.User.UserResponse;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 @RestController()
 @RequestMapping("/administrator")
+@RolesAllowed("ADMINISTRATOR")
 public class AdministratorController {
     private final AdministratorManager administratorManager;
     private final Jws jws;

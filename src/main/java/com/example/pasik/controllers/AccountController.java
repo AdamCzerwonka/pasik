@@ -4,6 +4,7 @@ import com.example.pasik.auth.JwtUtil;
 import com.example.pasik.managers.UserManager;
 import com.example.pasik.model.User;
 import com.example.pasik.model.dto.User.ChangePasswordRequest;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;

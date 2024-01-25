@@ -5,6 +5,7 @@ import com.example.pasik.managers.UserManager;
 import com.example.pasik.model.User;
 import com.example.pasik.model.dto.User.UserResponse;
 import com.nimbusds.jose.JOSEException;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class UserController {
     }
 
     @GetMapping
+    @RolesAllowed({"ADMINISTRATOR", "MANAGER"})
     public ResponseEntity<List<UserResponse>> get(@RequestParam(defaultValue = "") String filter) {
         var result = userManager.getAll(filter).stream().map(UserResponse::fromUser).toList();
 

@@ -8,6 +8,7 @@ import com.example.pasik.model.dto.Client.ClientCreateRequest;
 import com.example.pasik.model.dto.Manager.ManagerCreateRequest;
 import com.example.pasik.model.dto.Manager.ManagerUpdateRequest;
 import com.example.pasik.model.dto.User.UserResponse;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,7 @@ public class ManagerController {
     }
 
     @GetMapping
+    @RolesAllowed("ADMINISTRATOR")
     public ResponseEntity<?> get() {
         var result = managerManager.get().stream().map(UserResponse::fromUser).toList();
 
@@ -82,6 +84,7 @@ public class ManagerController {
     }
 
     @PostMapping("/activate/{id}")
+    @RolesAllowed("ADMINISTRATOR")
     public ResponseEntity<?> activate(@PathVariable UUID id) throws NotFoundException {
         managerManager.setActiveStatus(id, true);
 
@@ -89,6 +92,7 @@ public class ManagerController {
     }
 
     @PostMapping("/deactivate/{id}")
+    @RolesAllowed("ADMINISTRATOR")
     public ResponseEntity<?> deactivate(@PathVariable UUID id) throws NotFoundException {
         managerManager.setActiveStatus(id, false);
 

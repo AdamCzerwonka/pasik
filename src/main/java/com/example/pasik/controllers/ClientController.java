@@ -11,6 +11,7 @@ import com.example.pasik.model.dto.Client.ClientCreateRequest;
 import com.example.pasik.model.dto.Client.ClientUpdateRequest;
 import com.example.pasik.model.dto.User.UserResponse;
 import com.nimbusds.jose.JOSEException;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,7 @@ public class ClientController {
     }
 
     @GetMapping
+    @RolesAllowed("ADMINISTRATOR")
     public ResponseEntity<?> get() {
         var result = clientManager.get().stream().map(UserResponse::fromUser).toList();
 
@@ -92,6 +94,7 @@ public class ClientController {
     }
 
     @PostMapping("/activate/{id}")
+    @RolesAllowed("ADMINISTRATOR")
     public ResponseEntity<?> activate(@PathVariable UUID id) throws NotFoundException {
         clientManager.setActiveStatus(id, true);
 
@@ -99,6 +102,7 @@ public class ClientController {
     }
 
     @PostMapping("/deactivate/{id}")
+    @RolesAllowed("ADMINISTRATOR")
     public ResponseEntity<?> deactivate(@PathVariable UUID id) throws NotFoundException {
         clientManager.setActiveStatus(id, false);
 
