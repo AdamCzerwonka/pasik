@@ -9,34 +9,35 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
+import org.springframework.stereotype.Component;
 
-public class JwsSign {
+@Component
+public class Jws {
     RSAKey rsaJWK;
     RSAKey publicKey;
 
-    public JwsSign() {
+    public Jws() {
         try {
-            rsaJWK = new RSAKeyGenerator(2048)
+            this.rsaJWK = new RSAKeyGenerator(2048)
                     .algorithm(JWSAlgorithm.RS256)
                     .keyUse(KeyUse.SIGNATURE)
                     .keyID("1")
                     .generate();
 
-            publicKey = rsaJWK.toPublicJWK();
-        } catch (Exception e) {
+            this.publicKey = rsaJWK.toPublicJWK();
+        } catch (Exception ignored) {
         }
 
     }
-    public String sign(String toSign) {
+    public String sign(String unsigned) {
         try {
-            Payload payload = new Payload(toSign);
+            Payload payload = new Payload(unsigned);
             JWSObjectJSON jwsObjectJSON = new JWSObjectJSON(payload);
             jwsObjectJSON.sign(new JWSHeader.Builder((JWSAlgorithm) rsaJWK.getAlgorithm()).keyID(rsaJWK.getKeyID()).build(), new RSASSASigner(rsaJWK));
             return jwsObjectJSON.serializeGeneral();
         } catch (Exception e) {
+            return null;
         }
-
-        return null;
     }
 
     public boolean verify(String json) {
@@ -52,8 +53,16 @@ public class JwsSign {
 
             return JWSObjectJSON.State.VERIFIED.equals(jwsObjectJSON.getState());
         } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean verifyWithUnsigned(String json, String unsigned) {
+        if (!verify(json)) {
+            return false;
         }
 
-        return false;
+        String signed = sign(unsigned);
+        return json.equals(signed);
     }
 }
