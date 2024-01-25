@@ -28,6 +28,11 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
+    public User getByLogin(String login) {
+        return userRepository.getByLogin(login);
+    }
+
+    @Override
     public User updatePassword(String login, String oldPassword, String newPassword) {
         String password = passwordEncoder.encode(newPassword);
         oldPassword = passwordEncoder.encode(oldPassword);

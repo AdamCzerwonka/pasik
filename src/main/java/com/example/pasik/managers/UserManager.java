@@ -11,4 +11,6 @@ public interface UserManager {
     User getById(UUID id);
 
     User updatePassword(String login, String oldPassword, String newPassword);
+
+    User getByLogin(String login);
 }
