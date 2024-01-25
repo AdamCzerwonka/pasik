@@ -43,4 +43,10 @@ public class JwtUtil {
         User user = userRepository.getByLogin(decodedJWT.getSubject());
         return new UsernamePasswordAuthenticationToken(user, null, Collections.singleton(new SimpleGrantedAuthority(user.getRole().toUpperCase())));
     }
+
+    public String getUserLogin(String token) {
+        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret_key)).build();
+        DecodedJWT decodedJWT = verifier.verify(token);
+        return decodedJWT.getSubject();
+    }
 }

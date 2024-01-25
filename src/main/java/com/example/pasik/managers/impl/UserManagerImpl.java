@@ -25,4 +25,9 @@ public class UserManagerImpl implements UserManager {
     public User getById(UUID id) {
         return userRepository.getById(id);
     }
+
+    @Override
+    public User getByLogin(String login) {
+        return userRepository.getByLogin(login);
+    }
 }

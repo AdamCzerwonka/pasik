@@ -1,11 +1,16 @@
 package com.example.pasik.controllers;
 
+import com.example.pasik.auth.JwtUtil;
 import com.example.pasik.exceptions.*;
 import com.example.pasik.managers.RentManager;
+import com.example.pasik.managers.UserManager;
 import com.example.pasik.model.Error;
 import com.example.pasik.model.Rent;
+import com.example.pasik.model.User;
 import com.example.pasik.model.dto.Rent.RentCreateRequest;
+import com.example.pasik.model.dto.Rent.RentForUserCreateRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,13 +22,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/rent")
 public class RentController {
     private final RentManager rentManager;
+    private final JwtUtil jwtUtil;
+    private final UserManager userManager;
 
-    public RentController(final RentManager rentManager) {
-        this.rentManager = rentManager;
+    private User getUserFromComplexToken(String complexToken) {
+        String token = complexToken.replace("Bearer ", "");
+        String login = jwtUtil.getUserLogin(token);
+        return userManager.getByLogin(login);
     }
 
     @PostMapping
@@ -33,6 +43,18 @@ public class RentController {
                 rentRequest.getClientId(),
                 rentRequest.getRealEstateId(),
                 rentRequest.getStartDate());
+
+        return ResponseEntity.created(new URI("http://localhost:8080/rent/" + result.getId())).body(result);
+    }
+
+    @PostMapping("/me")
+    public ResponseEntity<Rent> create(@RequestHeader("Authorization") String complexToken, @RequestBody @Valid RentForUserCreateRequest rentForUserRequest) throws NotFoundException
+            , URISyntaxException, RealEstateRentedException, AccountInactiveException {
+        User user = getUserFromComplexToken(complexToken);
+        var result = rentManager.create(
+                user.getId(),
+                rentForUserRequest.getRealEstateId(),
+                rentForUserRequest.getStartDate());
 
         return ResponseEntity.created(new URI("http://localhost:8080/rent/" + result.getId())).body(result);
     }

@@ -16,53 +16,53 @@ public class Jws {
     RSAKey rsaJWK;
     RSAKey publicKey;
 
-    public Jws() {
-        try {
-            this.rsaJWK = new RSAKeyGenerator(2048)
-                    .algorithm(JWSAlgorithm.RS256)
-                    .keyUse(KeyUse.SIGNATURE)
-                    .keyID("1")
-                    .generate();
+//    public Jws() {
+//        try {
+//            this.rsaJWK = new RSAKeyGenerator(2048)
+//                    .algorithm(JWSAlgorithm.RS256)
+//                    .keyUse(KeyUse.SIGNATURE)
+//                    .keyID("1")
+//                    .generate();
+//
+//            this.publicKey = rsaJWK.toPublicJWK();
+//        } catch (Exception ignored) {
+//        }
+//
+//    }
+//    public String sign(String unsigned) {
+//        try {
+//            Payload payload = new Payload(unsigned);
+//            JWSObjectJSON jwsObjectJSON = new JWSObjectJSON(payload);
+//            jwsObjectJSON.sign(new JWSHeader.Builder((JWSAlgorithm) rsaJWK.getAlgorithm()).keyID(rsaJWK.getKeyID()).build(), new RSASSASigner(rsaJWK));
+//            return jwsObjectJSON.serializeGeneral();
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
 
-            this.publicKey = rsaJWK.toPublicJWK();
-        } catch (Exception ignored) {
-        }
+//    public boolean verify(String json) {
+//        try {
+//            JWSObjectJSON jwsObjectJSON = JWSObjectJSON.parse(json);
+//            JWSObjectJSON.Signature signature = jwsObjectJSON.getSignatures().getFirst();
+//
+//            if (publicKey.getKeyID().equals(signature.getHeader().getKeyID())) {
+//                if (!signature.verify(new RSASSAVerifier(publicKey))) {
+//                    return false;
+//                }
+//            }
+//
+//            return JWSObjectJSON.State.VERIFIED.equals(jwsObjectJSON.getState());
+//        } catch (Exception e) {
+//            return false;
+//        }
+//    }
 
-    }
-    public String sign(String unsigned) {
-        try {
-            Payload payload = new Payload(unsigned);
-            JWSObjectJSON jwsObjectJSON = new JWSObjectJSON(payload);
-            jwsObjectJSON.sign(new JWSHeader.Builder((JWSAlgorithm) rsaJWK.getAlgorithm()).keyID(rsaJWK.getKeyID()).build(), new RSASSASigner(rsaJWK));
-            return jwsObjectJSON.serializeGeneral();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public boolean verify(String json) {
-        try {
-            JWSObjectJSON jwsObjectJSON = JWSObjectJSON.parse(json);
-            JWSObjectJSON.Signature signature = jwsObjectJSON.getSignatures().getFirst();
-
-            if (publicKey.getKeyID().equals(signature.getHeader().getKeyID())) {
-                if (!signature.verify(new RSASSAVerifier(publicKey))) {
-                    return false;
-                }
-            }
-
-            return JWSObjectJSON.State.VERIFIED.equals(jwsObjectJSON.getState());
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public boolean verifyWithUnsigned(String json, String unsigned) {
-        if (!verify(json)) {
-            return false;
-        }
-
-        String signed = sign(unsigned);
-        return json.equals(signed);
-    }
+//    public boolean verifyWithUnsigned(String json, String unsigned) {
+//        if (!verify(json)) {
+//            return false;
+//        }
+//
+//        String signed = sign(unsigned);
+//        return json.equals(signed);
+//    }
 }

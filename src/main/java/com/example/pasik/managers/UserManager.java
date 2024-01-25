@@ -9,4 +9,6 @@ public interface UserManager {
     List<User> getAll(String filter);
 
     User getById(UUID id);
+
+    User getByLogin(String login);
 }

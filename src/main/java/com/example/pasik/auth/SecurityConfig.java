@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> {
                     requests.requestMatchers("/auth/**").permitAll();
+                    requests.requestMatchers("/realestate/**").authenticated();
                     requests.requestMatchers("/user/**").authenticated();
                     requests.requestMatchers("/client/**").authenticated();
                     requests.requestMatchers("/manager/**").authenticated();
