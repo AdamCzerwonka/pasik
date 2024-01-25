@@ -2,6 +2,7 @@ package com.example.pasik.controllers;
 
 import com.example.pasik.exceptions.LoginAlreadyTakenException;
 import com.example.pasik.exceptions.NotFoundException;
+import com.example.pasik.jws.Jws;
 import com.example.pasik.managers.ClientManager;
 import com.example.pasik.managers.RentManager;
 import com.example.pasik.model.Error;
@@ -9,7 +10,9 @@ import com.example.pasik.model.Rent;
 import com.example.pasik.model.dto.Client.ClientCreateRequest;
 import com.example.pasik.model.dto.Client.ClientUpdateRequest;
 import com.example.pasik.model.dto.User.UserResponse;
+import com.nimbusds.jose.JOSEException;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +29,12 @@ import java.util.UUID;
 public class ClientController {
     private final ClientManager clientManager;
     private final RentManager rentManager;
+    private final Jws jws;
 
-    public ClientController(final ClientManager clientManager, final RentManager rentManager) {
+    public ClientController(final ClientManager clientManager, final RentManager rentManager, Jws jws) {
         this.clientManager = clientManager;
         this.rentManager = rentManager;
+        this.jws = jws;
     }
 
     @GetMapping
@@ -40,10 +45,11 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable UUID id) throws NotFoundException {
+    public ResponseEntity<?> getById(@PathVariable UUID id) throws NotFoundException, JOSEException {
         var result = clientManager.getById(id);
+        var signed = jws.sign(result.getId().toString());
 
-        return ResponseEntity.ok(UserResponse.fromUser(result));
+        return ResponseEntity.ok().header("Etag", signed).body(UserResponse.fromUser(result));
     }
 
     @GetMapping("/{id}/rents")
@@ -73,7 +79,13 @@ public class ClientController {
     }
 
     @PutMapping
-    public ResponseEntity<?> update(@Valid @RequestBody ClientUpdateRequest request) throws NotFoundException {
+    public ResponseEntity<?> update(
+            @RequestHeader(HttpHeaders.IF_MATCH) String token,
+            @Valid @RequestBody ClientUpdateRequest request) throws NotFoundException {
+        var isOk = jws.verifySign(token, request.getId());
+        if (!isOk) {
+            return ResponseEntity.badRequest().build();
+        }
         var result = clientManager.update(request.ToClient());
 
         return ResponseEntity.ok(UserResponse.fromUser(result));

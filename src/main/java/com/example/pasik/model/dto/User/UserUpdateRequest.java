@@ -21,6 +21,4 @@ public abstract class UserUpdateRequest {
     private String login;
     @NotNull
     private Boolean active;
-    @NotBlank(message = "Password cannot be blank")
-    private String password;
 }

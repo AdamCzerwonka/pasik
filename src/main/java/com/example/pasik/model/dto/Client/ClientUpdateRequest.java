@@ -11,11 +11,11 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ClientUpdateRequest extends UserUpdateRequest {
     @Builder
-    public ClientUpdateRequest(UUID id, String firstName, String lastName, String login, Boolean active, String password) {
-        super(id, firstName, lastName, login, active, password);
+    public ClientUpdateRequest(UUID id, String firstName, String lastName, String login, Boolean active) {
+        super(id, firstName, lastName, login, active);
     }
 
     public Client ToClient() {
-        return new Client(getId(), getFirstName(), getLastName(), getLogin(), getActive(), getPassword());
+        return new Client(getId(), getFirstName(), getLastName(), getLogin(), getActive(), null);
     }
 }

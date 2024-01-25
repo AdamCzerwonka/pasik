@@ -1,8 +1,11 @@
 package com.example.pasik.controllers;
 
+import com.example.pasik.jws.Jws;
 import com.example.pasik.managers.UserManager;
 import com.example.pasik.model.User;
 import com.example.pasik.model.dto.User.UserResponse;
+import com.nimbusds.jose.JOSEException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,9 +16,11 @@ import java.util.UUID;
 @RequestMapping("/user")
 public class UserController {
     private final UserManager userManager;
+    private final Jws jws;
 
-    public UserController(final UserManager userManager) {
+    public UserController(final UserManager userManager, Jws jws) {
         this.userManager = userManager;
+        this.jws = jws;
     }
 
     @GetMapping
@@ -26,8 +31,10 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<UserResponse> getById(@PathVariable UUID id) {
+    public ResponseEntity<UserResponse> getById(@PathVariable UUID id) throws JOSEException {
+        System.out.println(id);
         var result = userManager.getById(id);
-        return ResponseEntity.ok(UserResponse.fromUser(result));
+        var signed = jws.sign(result.getId().toString());
+        return ResponseEntity.ok().header(HttpHeaders.ETAG, signed).body(UserResponse.fromUser(result));
     }
 }

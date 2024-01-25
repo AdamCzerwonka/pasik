@@ -2,11 +2,13 @@ package com.example.pasik.controllers;
 
 import com.example.pasik.exceptions.LoginAlreadyTakenException;
 import com.example.pasik.exceptions.NotFoundException;
+import com.example.pasik.jws.Jws;
 import com.example.pasik.managers.AdministratorManager;
 import com.example.pasik.model.dto.Administrator.AdministratorCreateRequest;
 import com.example.pasik.model.dto.Administrator.AdministratorUpdateRequest;
 import com.example.pasik.model.dto.User.UserResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +21,11 @@ import java.util.UUID;
 @RequestMapping("/administrator")
 public class AdministratorController {
     private final AdministratorManager administratorManager;
+    private final Jws jws;
 
-    public AdministratorController(final AdministratorManager administratorManager) {
+    public AdministratorController(final AdministratorManager administratorManager, Jws jws) {
         this.administratorManager = administratorManager;
+        this.jws = jws;
     }
 
     @GetMapping
@@ -64,7 +68,13 @@ public class AdministratorController {
     }
 
     @PutMapping
-    public ResponseEntity<?> update(@Valid @RequestBody AdministratorUpdateRequest request) throws NotFoundException {
+    public ResponseEntity<?> update(
+            @RequestHeader(HttpHeaders.IF_MATCH) String token,
+            @Valid @RequestBody AdministratorUpdateRequest request) throws NotFoundException {
+        var isOk = jws.verifySign(token, request.getId());
+        if (!isOk) {
+            return ResponseEntity.badRequest().build();
+        }
         var result = administratorManager.update(request.ToAdministrator());
 
         return ResponseEntity.ok(UserResponse.fromUser(result));

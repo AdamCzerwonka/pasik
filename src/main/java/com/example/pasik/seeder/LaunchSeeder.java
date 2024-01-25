@@ -1,9 +1,11 @@
 package com.example.pasik.seeder;
 
 import com.example.pasik.config.MongoClientConfiguration;
+import com.example.pasik.managers.AdministratorManager;
 import com.example.pasik.managers.ClientManager;
 import com.example.pasik.managers.RealEstateManager;
 import com.example.pasik.managers.RentManager;
+import com.example.pasik.model.Administrator;
 import com.example.pasik.model.Client;
 import com.example.pasik.model.RealEstate;
 import com.example.pasik.model.Rent;
@@ -21,11 +23,13 @@ public class LaunchSeeder implements CommandLineRunner {
     private final RealEstateManager realEstateManager;
     private final RentManager rentManager;
     private final ClientManager clientManager;
+    private final AdministratorManager administratorManager;
 
-    public LaunchSeeder(final RealEstateManager realEstateManager, final RentManager rentManager, final ClientManager clientManager) {
+    public LaunchSeeder(final RealEstateManager realEstateManager, final RentManager rentManager, final ClientManager clientManager, AdministratorManager administratorManager) {
         this.realEstateManager = realEstateManager;
         this.rentManager = rentManager;
         this.clientManager = clientManager;
+        this.administratorManager = administratorManager;
     }
 
     @Override
@@ -49,13 +53,15 @@ public class LaunchSeeder implements CommandLineRunner {
             Client inactiveClient = new Client(null, "Fiona", "Green", "shrek", false, "test123");
             inactiveClient = clientManager.create(inactiveClient);
 
-            RealEstate realEstate = new RealEstate(null,"Big House", "Twinkle Street", 21, 15);
+            Administrator administrator = new Administrator(null, "John", "Doe", "JD", true, "test123");
+            administratorManager.create(administrator);
+            RealEstate realEstate = new RealEstate(null, "Big House", "Twinkle Street", 21, 15);
             realEstateManager.create(realEstate);
-            realEstate = new RealEstate(null,"Small House", "Test123", 21, 15);
+            realEstate = new RealEstate(null, "Small House", "Test123", 21, 15);
             realEstateManager.create(realEstate);
-            realEstate = new RealEstate(null,"House", "Grove Street", 21, 15);
+            realEstate = new RealEstate(null, "House", "Grove Street", 21, 15);
             realEstateManager.create(realEstate);
-            RealEstate realEstate2 = new RealEstate(null,"Villa", "JumpStreet 21", 1500, 1000);
+            RealEstate realEstate2 = new RealEstate(null, "Villa", "JumpStreet 21", 1500, 1000);
             realEstate2 = realEstateManager.create(realEstate2);
 
             Rent rent = rentManager.create(client2.getId(), realEstate2.getId(), LocalDate.now());

@@ -2,12 +2,14 @@ package com.example.pasik.controllers;
 
 import com.example.pasik.exceptions.LoginAlreadyTakenException;
 import com.example.pasik.exceptions.NotFoundException;
+import com.example.pasik.jws.Jws;
 import com.example.pasik.managers.ManagerManager;
 import com.example.pasik.model.dto.Client.ClientCreateRequest;
 import com.example.pasik.model.dto.Manager.ManagerCreateRequest;
 import com.example.pasik.model.dto.Manager.ManagerUpdateRequest;
 import com.example.pasik.model.dto.User.UserResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +22,11 @@ import java.util.UUID;
 @RequestMapping("/manager")
 public class ManagerController {
     private final ManagerManager managerManager;
+    private final Jws jws;
 
-    public ManagerController(final ManagerManager managerManager) {
+    public ManagerController(final ManagerManager managerManager, Jws jws) {
         this.managerManager = managerManager;
+        this.jws = jws;
     }
 
     @GetMapping
@@ -65,7 +69,13 @@ public class ManagerController {
     }
 
     @PutMapping
-    public ResponseEntity<?> update(@Valid @RequestBody ManagerUpdateRequest request) throws NotFoundException {
+    public ResponseEntity<?> update(
+            @RequestHeader(HttpHeaders.IF_MATCH) String token,
+            @Valid @RequestBody ManagerUpdateRequest request) throws NotFoundException {
+        var isOk = jws.verifySign(token, request.getId());
+        if (!isOk) {
+            return ResponseEntity.badRequest().build();
+        }
         var result = managerManager.update(request.ToManager());
 
         return ResponseEntity.ok(UserResponse.fromUser(result));

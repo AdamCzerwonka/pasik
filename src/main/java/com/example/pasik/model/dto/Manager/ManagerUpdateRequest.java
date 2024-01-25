@@ -8,16 +8,17 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class ManagerUpdateRequest extends UserUpdateRequest {
     @Builder
-    public ManagerUpdateRequest(UUID id, String firstName, String lastName, String login, Boolean active, String password) {
-        super(id, firstName, lastName, login, active, password);
+    public ManagerUpdateRequest(UUID id, String firstName, String lastName, String login, Boolean active) {
+        super(id, firstName, lastName, login, active);
     }
 
     public Manager ToManager() {
-        return new Manager(getId(), getFirstName(), getLastName(), getLogin(), getActive(), getPassword());
+        return new Manager(getId(), getFirstName(), getLastName(), getLogin(), getActive(), null);
     }
 }

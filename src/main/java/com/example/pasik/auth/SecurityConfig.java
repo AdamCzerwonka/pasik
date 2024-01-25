@@ -54,8 +54,11 @@ public class SecurityConfig {
         configuration.setAllowedHeaders(List.of(
                 HttpHeaders.AUTHORIZATION,
                 HttpHeaders.CONTENT_TYPE,
-                HttpHeaders.ACCEPT
+                HttpHeaders.ACCEPT,
+                HttpHeaders.IF_MATCH
         ));
+
+        configuration.addExposedHeader(HttpHeaders.ETAG);
 
         configuration.setAllowedMethods(List.of("GET", "POST", "DELETE", "PUT", "PATCH"));
 
